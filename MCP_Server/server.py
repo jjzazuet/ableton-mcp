@@ -3,9 +3,13 @@ from mcp.server.fastmcp import FastMCP, Context
 import socket
 import json
 import logging
+import os
 from dataclasses import dataclass
 from contextlib import asynccontextmanager
 from typing import AsyncIterator, Dict, Any, List, Union
+
+ABLETON_HOST = os.environ.get("ABLETON_HOST", "localhost")
+ABLETON_PORT = int(os.environ.get("ABLETON_PORT", "9877"))
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, 
@@ -22,14 +26,16 @@ class AbletonConnection:
         """Connect to the Ableton Remote Script socket server"""
         if self.sock:
             return True
-            
+
         try:
             self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self.sock.settimeout(5.0)
             self.sock.connect((self.host, self.port))
+            self.sock.settimeout(None)
             logger.info(f"Connected to Ableton at {self.host}:{self.port}")
             return True
         except Exception as e:
-            logger.error(f"Failed to connect to Ableton: {str(e)}")
+            logger.error(f"Failed to connect to Ableton at {self.host}:{self.port}: {str(e)}")
             self.sock = None
             return False
     
@@ -195,14 +201,21 @@ _ableton_connection = None
 def get_ableton_connection():
     """Get or create a persistent Ableton connection"""
     global _ableton_connection
-    
-    if _ableton_connection is not None:
+
+    if _ableton_connection is not None and _ableton_connection.sock is not None:
         try:
-            # Test the connection with a simple ping
-            # We'll try to send an empty message, which should fail if the connection is dead
-            # but won't affect Ableton if it's alive
-            _ableton_connection.sock.settimeout(1.0)
-            _ableton_connection.sock.sendall(b'')
+            # Check if the socket is still alive by peeking for data
+            # MSG_PEEK + MSG_DONTWAIT will raise BlockingIOError if alive but no data,
+            # or return b'' if the remote end has closed the connection.
+            _ableton_connection.sock.setblocking(False)
+            try:
+                data = _ableton_connection.sock.recv(1, socket.MSG_PEEK)
+                if data == b'':
+                    raise ConnectionError("Remote end closed")
+            except BlockingIOError:
+                pass  # Socket is alive, just no data waiting — this is normal
+            finally:
+                _ableton_connection.sock.setblocking(True)
             return _ableton_connection
         except Exception as e:
             logger.warning(f"Existing connection is no longer valid: {str(e)}")
@@ -214,26 +227,14 @@ def get_ableton_connection():
     
     # Connection doesn't exist or is invalid, create a new one
     if _ableton_connection is None:
-        # Try to connect up to 3 times with a short delay between attempts
         max_attempts = 3
         for attempt in range(1, max_attempts + 1):
             try:
-                logger.info(f"Connecting to Ableton (attempt {attempt}/{max_attempts})...")
-                _ableton_connection = AbletonConnection(host="localhost", port=9877)
+                logger.info(f"Connecting to Ableton at {ABLETON_HOST}:{ABLETON_PORT} (attempt {attempt}/{max_attempts})...")
+                _ableton_connection = AbletonConnection(host=ABLETON_HOST, port=ABLETON_PORT)
                 if _ableton_connection.connect():
                     logger.info("Created new persistent connection to Ableton")
-                    
-                    # Validate connection with a simple command
-                    try:
-                        # Get session info as a test
-                        _ableton_connection.send_command("get_session_info")
-                        logger.info("Connection validated successfully")
-                        return _ableton_connection
-                    except Exception as e:
-                        logger.error(f"Connection validation failed: {str(e)}")
-                        _ableton_connection.disconnect()
-                        _ableton_connection = None
-                        # Continue to next attempt
+                    return _ableton_connection
                 else:
                     _ableton_connection = None
             except Exception as e:
@@ -241,8 +242,7 @@ def get_ableton_connection():
                 if _ableton_connection:
                     _ableton_connection.disconnect()
                     _ableton_connection = None
-            
-            # Wait before trying again, but only if we have more attempts left
+
             if attempt < max_attempts:
                 import time
                 time.sleep(1.0)
