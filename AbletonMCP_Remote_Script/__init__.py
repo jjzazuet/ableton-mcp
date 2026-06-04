@@ -358,6 +358,14 @@ class AbletonMCP(ControlSurface):
     
     # Command implementations
     
+    def _safe_song_property(self, attr, cast, default):
+        """Read self._song.<attr> with cast, returning default on common failures.
+        Catches only narrow exceptions so genuine bugs still surface."""
+        try:
+            return cast(getattr(self._song, attr))
+        except (AttributeError, TypeError, ValueError):
+            return default
+
     def _get_session_info(self):
         """Get information about the current session"""
         try:
@@ -371,7 +379,18 @@ class AbletonMCP(ControlSurface):
                     "name": "Master",
                     "volume": self._song.master_track.mixer_device.volume.value,
                     "panning": self._song.master_track.mixer_device.panning.value
-                }
+                },
+                # Transport / playback state — lets clients render a live
+                # playhead without polling separately. Each property is read
+                # via _safe_song_property so an attribute missing on a given
+                # Live version falls back to its default rather than breaking
+                # the response shape.
+                "is_playing":        self._safe_song_property("is_playing",        bool,  False),
+                "current_song_time": self._safe_song_property("current_song_time", float, 0.0),
+                "song_length":       self._safe_song_property("song_length",       float, 0.0),
+                "loop":              self._safe_song_property("loop",              bool,  False),
+                "loop_start":        self._safe_song_property("loop_start",        float, 0.0),
+                "loop_length":       self._safe_song_property("loop_length",       float, 0.0),
             }
             return result
         except Exception as e:
