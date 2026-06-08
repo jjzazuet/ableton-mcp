@@ -226,6 +226,18 @@ class AbletonMCP(ControlSurface):
             elif command_type == "get_track_info":
                 track_index = params.get("track_index", 0)
                 response["result"] = self._get_track_info(track_index)
+            elif command_type == "get_clip_notes":
+                track_index = params.get("track_index", 0)
+                clip_index = params.get("clip_index", 0)
+                from_time = params.get("from_time", 0.0)
+                to_time = params.get("to_time", float('inf'))
+                response["result"] = self._get_clip_notes(track_index, clip_index, from_time, to_time)
+            elif command_type == "get_scene_info":
+                scene_index = params.get("scene_index", 0)
+                response["result"] = self._get_scene_info(scene_index)
+            elif command_type == "get_scene_notes":
+                scene_index = params.get("scene_index", 0)
+                response["result"] = self._get_scene_notes(scene_index)
             # Commands that modify Live's state should be scheduled on the main thread
             elif command_type in ["create_midi_track", "set_track_name",
                                  "create_clip", "create_audio_clip", "add_notes_to_clip", "set_clip_name",
@@ -792,6 +804,123 @@ class AbletonMCP(ControlSurface):
             }
         except Exception as e:
             self.log_message("Error getting arrangement clips: " + str(e))
+            raise
+
+    def _get_clip_notes(self, track_index, clip_index, from_time=0.0, to_time=float('inf')):
+        """Read all MIDI notes from a Session clip.
+
+        Uses Live's clip.get_notes(from_time, to_time) API.
+        Returns a list of {pitch, time, duration, velocity, mute}.
+        """
+        try:
+            if track_index < 0 or track_index >= len(self._song.tracks):
+                raise IndexError("Track index out of range")
+            track = self._song.tracks[track_index]
+            if clip_index < 0 or clip_index >= len(track.clip_slots):
+                raise IndexError("Clip slot index out of range")
+            slot = track.clip_slots[clip_index]
+            if not slot.has_clip:
+                return {"track_index": track_index, "clip_index": clip_index, "has_clip": False, "notes": []}
+            clip = slot.clip
+            if not clip.is_midi_clip:
+                return {"track_index": track_index, "clip_index": clip_index, "has_clip": True, "is_midi": False, "notes": []}
+
+            raw_notes = clip.get_notes(from_time, to_time)
+            notes = []
+            for n in raw_notes:
+                notes.append({
+                    "pitch": n[0],
+                    "time": n[1],
+                    "duration": n[2],
+                    "velocity": n[3],
+                    "mute": n[4] if len(n) > 4 else False
+                })
+
+            return {
+                "track_index": track_index,
+                "track_name": track.name,
+                "clip_index": clip_index,
+                "clip_name": clip.name,
+                "clip_length": clip.length,
+                "has_clip": True,
+                "is_midi": True,
+                "note_count": len(notes),
+                "notes": notes
+            }
+        except Exception as e:
+            self.log_message("Error getting clip notes: " + str(e))
+            raise
+
+    def _get_scene_info(self, scene_index):
+        """Return metadata about every clip in a scene row.
+
+        Scene.clip_slots parallels song.tracks — slot i = track i.
+        """
+        try:
+            if scene_index < 0 or scene_index >= len(self._song.scenes):
+                raise IndexError("Scene index out of range")
+            scene = self._song.scenes[scene_index]
+            clips = []
+            for ti, slot in enumerate(scene.clip_slots):
+                entry = {"track_index": ti, "has_clip": slot.has_clip}
+                if slot.has_clip:
+                    clip = slot.clip
+                    entry["clip_name"] = clip.name
+                    entry["clip_length"] = clip.length
+                    entry["is_midi_clip"] = clip.is_midi_clip
+                    entry["is_playing"] = clip.is_playing
+                clips.append(entry)
+            return {
+                "scene_index": scene_index,
+                "scene_name": scene.name,
+                "clip_count": sum(1 for c in clips if c["has_clip"]),
+                "clips": clips
+            }
+        except Exception as e:
+            self.log_message("Error getting scene info: " + str(e))
+            raise
+
+    def _get_scene_notes(self, scene_index):
+        """Read all MIDI notes across every clip in a scene row.
+
+        Combines _get_scene_info + _get_clip_notes per clip.
+        """
+        try:
+            if scene_index < 0 or scene_index >= len(self._song.scenes):
+                raise IndexError("Scene index out of range")
+            scene = self._song.scenes[scene_index]
+            tracks = []
+            for ti, slot in enumerate(scene.clip_slots):
+                if not slot.has_clip:
+                    continue
+                clip = slot.clip
+                if not clip.is_midi_clip:
+                    continue
+                raw_notes = clip.get_notes(0.0, float('inf'))
+                notes = []
+                for n in raw_notes:
+                    notes.append({
+                        "pitch": n[0],
+                        "time": n[1],
+                        "duration": n[2],
+                        "velocity": n[3],
+                        "mute": n[4] if len(n) > 4 else False
+                    })
+                tracks.append({
+                    "track_index": ti,
+                    "track_name": self._song.tracks[ti].name,
+                    "clip_name": clip.name,
+                    "note_count": len(notes),
+                    "notes": notes
+                })
+            return {
+                "scene_index": scene_index,
+                "scene_name": scene.name,
+                "track_count": len(tracks),
+                "tracks": tracks
+            }
+        except Exception as e:
+            self.log_message("Error getting scene notes: " + str(e))
             raise
 
     def _duplicate_session_clip_to_arrangement(self, track_index, clip_index, destination_time):

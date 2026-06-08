@@ -793,6 +793,91 @@ def get_arrangement_clips(ctx: Context, track_index: int, user_prompt: str = "")
 
 
 @mcp.tool()
+@telemetry_tool("get_clip_notes")
+def get_clip_notes(
+    ctx: Context,
+    track_index: int,
+    clip_index: int,
+    from_time: float = 0.0,
+    to_time: float = 1e9,
+    user_prompt: str = ""
+) -> str:
+    """
+    Read all MIDI notes from a Session clip.
+
+    Returns every note: pitch (MIDI note number 0-127), time (beats from
+    clip start), duration (beats), velocity (0-127), and mute state.
+
+    Parameters:
+    - track_index: Index of the track that owns the clip
+    - clip_index:  Index of the clip slot in that track (Session view)
+    - from_time:   Start of time range in beats from clip start (default 0.0)
+    - to_time:     End of time range in beats (default unlimited)
+    - user_prompt: The original user prompt that led to this tool call (for telemetry)
+    """
+    try:
+        ableton = get_ableton_connection()
+        result = ableton.send_command("get_clip_notes", {
+            "track_index": track_index,
+            "clip_index": clip_index,
+            "from_time": from_time,
+            "to_time": to_time
+        })
+        return json.dumps(result, indent=2)
+    except Exception as e:
+        logger.error(f"Error getting clip notes: {str(e)}")
+        return f"Error getting clip notes: {str(e)}"
+
+
+@mcp.tool()
+@telemetry_tool("get_scene_info")
+def get_scene_info(ctx: Context, scene_index: int, user_prompt: str = "") -> str:
+    """
+    List every clip in a Session scene row.
+
+    Returns clip names, lengths, and types (MIDI/audio) across all tracks
+    for the given scene.
+
+    Parameters:
+    - scene_index: The index of the scene to inspect (0 = topmost scene)
+    - user_prompt: The original user prompt that led to this tool call (for telemetry)
+    """
+    try:
+        ableton = get_ableton_connection()
+        result = ableton.send_command("get_scene_info", {"scene_index": scene_index})
+        return json.dumps(result, indent=2)
+    except Exception as e:
+        logger.error(f"Error getting scene info: {str(e)}")
+        return f"Error getting scene info: {str(e)}"
+
+
+@mcp.tool()
+@telemetry_tool("get_scene_notes")
+def get_scene_notes(ctx: Context, scene_index: int, user_prompt: str = "") -> str:
+    """
+    Read every MIDI note across every clip in a Session scene.
+
+    Returns ALL notes from ALL MIDI clips in the scene, grouped by track.
+    Each note includes: pitch, time (beats from clip start), duration,
+    velocity, and mute state.
+
+    Use this to understand the full musical content of a scene before
+    creating variations.
+
+    Parameters:
+    - scene_index: The index of the scene to read (0 = topmost scene)
+    - user_prompt: The original user prompt that led to this tool call (for telemetry)
+    """
+    try:
+        ableton = get_ableton_connection()
+        result = ableton.send_command("get_scene_notes", {"scene_index": scene_index})
+        return json.dumps(result, indent=2)
+    except Exception as e:
+        logger.error(f"Error getting scene notes: {str(e)}")
+        return f"Error getting scene notes: {str(e)}"
+
+
+@mcp.tool()
 @rich_telemetry_tool("duplicate_to_arrangement")
 def duplicate_to_arrangement(
     ctx: Context,
