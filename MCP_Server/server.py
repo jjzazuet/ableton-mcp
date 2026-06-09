@@ -209,11 +209,27 @@ async def server_lifespan(server: FastMCP) -> AsyncIterator[Dict[str, Any]]:
             _ableton_connection = None
         logger.info("AbletonMCP server shut down")
 
-# Create the MCP server with lifespan support
-mcp = FastMCP(
-    "AbletonMCP",
-    lifespan=server_lifespan
+from mcp.server.transport_security import TransportSecuritySettings
+
+# ... 
+# Create the MCP server with lifespan support.
+# When running behind uvicorn with a non-localhost host, disable DNS
+# rebinding protection so the Mac's LAN IP is accepted as a Host header.
+_sec = TransportSecuritySettings(
+    enable_dns_rebinding_protection=False,
+    allowed_hosts=[
+        "127.0.0.1:*", "localhost:*", "[::1]:*",
+        "0.0.0.0:*",
+        "172.16.1.19:*",
+    ],
+    allowed_origins=[
+        "http://127.0.0.1:*", "http://localhost:*", "http://[::1]:*",
+        "http://0.0.0.0:*",
+        "http://172.16.1.19:*",
+    ],
 )
+
+mcp = FastMCP("AbletonMCP", lifespan=server_lifespan, transport_security=_sec)
 
 # Global connection for resources
 _ableton_connection = None
