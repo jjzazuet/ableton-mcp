@@ -952,8 +952,6 @@ def main():
     else:
         logger.info("Starting MCP server via stdio")
         mcp.run()
- 
-
 
 
 if __name__ == "__main__":
