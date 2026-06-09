@@ -1,15 +1,24 @@
 # ableton_mcp_server.py
+import sys
+import os
+
+# Make imports work whether run directly or installed as package
+_pkg_dir = os.path.dirname(os.path.abspath(__file__))
+if _pkg_dir not in sys.path:
+    sys.path.insert(0, _pkg_dir)
+
 from mcp.server.fastmcp import FastMCP, Context
 import socket
 import json
 import logging
-import os
 from dataclasses import dataclass
 from contextlib import asynccontextmanager
 from typing import AsyncIterator, Dict, Any, List, Union
 
-from .telemetry import record_startup
-from .telemetry_decorator import telemetry_tool, rich_telemetry_tool
+import telemetry
+from telemetry import record_startup
+import telemetry_decorator
+from telemetry_decorator import telemetry_tool, rich_telemetry_tool
 
 ABLETON_HOST = os.environ.get("ABLETON_HOST", "localhost")
 ABLETON_PORT = int(os.environ.get("ABLETON_PORT", "9877"))
@@ -938,10 +947,14 @@ def main():
         host = os.environ.get("MCP_HOST", "0.0.0.0")
         port = int(os.environ.get("MCP_PORT", "9878"))
         logger.info(f"Starting MCP server via SSE on {host}:{port}")
-        mcp.run(transport="sse", host=host, port=port)
+        import uvicorn
+        uvicorn.run(mcp.sse_app(), host=host, port=port)
     else:
         logger.info("Starting MCP server via stdio")
         mcp.run()
+ 
+
+
 
 if __name__ == "__main__":
     main()
