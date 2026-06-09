@@ -825,7 +825,8 @@ class AbletonMCP(ControlSurface):
             if not clip.is_midi_clip:
                 return {"track_index": track_index, "clip_index": clip_index, "has_clip": True, "is_midi": False, "notes": []}
 
-            raw_notes = clip.get_notes(from_time, to_time)
+            span = to_time if to_time < float('inf') else clip.length
+            raw_notes = clip.get_notes(from_time, 0, span, 128)
             notes = []
             for n in raw_notes:
                 notes.append({
@@ -896,7 +897,7 @@ class AbletonMCP(ControlSurface):
                 clip = slot.clip
                 if not clip.is_midi_clip:
                     continue
-                raw_notes = clip.get_notes(0.0, float('inf'))
+                raw_notes = clip.get_notes(0.0, 0, clip.length, 128)
                 notes = []
                 for n in raw_notes:
                     notes.append({
