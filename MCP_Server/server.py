@@ -928,8 +928,20 @@ def duplicate_to_arrangement(
 
 # Main execution
 def main():
-    """Run the MCP server"""
-    mcp.run()
+    """Run the MCP server.
+
+    Transport: set MCP_TRANSPORT env to 'sse' for HTTP (default: stdio).
+    For SSE: set MCP_HOST (default 0.0.0.0) and MCP_PORT (default 9878).
+    """
+    transport = os.environ.get("MCP_TRANSPORT", "stdio")
+    if transport == "sse":
+        host = os.environ.get("MCP_HOST", "0.0.0.0")
+        port = int(os.environ.get("MCP_PORT", "9878"))
+        logger.info(f"Starting MCP server via SSE on {host}:{port}")
+        mcp.run(transport="sse", host=host, port=port)
+    else:
+        logger.info("Starting MCP server via stdio")
+        mcp.run()
 
 if __name__ == "__main__":
     main()
