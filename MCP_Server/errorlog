@@ -1,0 +1,1091 @@
+
+audio-plugin-wrapper/vst-native on  main [!] took 52s
+❯ cd ..
+
+audio-plugin-wrapper on  main [!]
+❯ cd ..
+
+~/code
+❯ clear
+
+~/code
+❯ cd vgmusic-restoration/
+
+vgmusic-restoration on  main [!]
+❯ git pull
+remote: Enumerating objects: 62, done.
+remote: Counting objects: 100% (62/62), done.
+remote: Compressing objects: 100% (33/33), done.
+remote: Total 33 (delta 15), reused 0 (delta 0), pack-reused 0 (from 0)
+Unpacking objects: 100% (33/33), 31.34 KiB | 802.00 KiB/s, done.
+From git.xio.vacco.li:jjzazuet/vgmusic-restoration
+   1d1b96c..750e516  main       -> origin/main
+Updating 1d1b96c..750e516
+Fast-forward
+ Pipfile                                                                                            |  12 +++
+ Pipfile.lock                                                                                       |  38 +++++++++
+ midi/quantize_track.py                                                                             | 224 
++++++++++++++++++++++++++++++++++++++++++++++++++
+ projects/snes/f-zero/ending-theme/ending-theme.mid                                                 | Bin 21578 -> 21501 bytes
+ projects/snes/f-zero/select-time-theme/select-time-theme.mid                                       | Bin 7499 -> 7405 bytes
+ projects/snes/run_all.sh                                                                           |   1 +
+ .../brinstar-overgrown-with-vegetation-area/brinstar-overgrown-with-vegetation-area.mid            | Bin 11988 -> 11932 bytes
+ projects/snes/super-metroid/theme-of-super-metroid/theme-of-super-metroid.mid                      | Bin 9188 -> 9175 bytes
+ projects/snes/tmnt-tournament-fighters/metal-works/metal-works.mid                                 | Bin 29320 -> 28865 bytes
+ projects/snes/tmnt-tournament-fighters/mt-olympus/mt-olympus.mid                                   | Bin 31122 -> 31098 bytes
+ projects/snes/vortex/bonus/bonus.mid                                                               | Bin 25699 -> 25457 bytes
+ projects/snes/vortex/menu/menu.mid                                                                 | Bin 9451 -> 9407 bytes
+ tools/spctool/midi_capture.c                                                                       | 109 ++----------------------
+ tools/spctool/spctool                                                                              | Bin 134808 -> 134768 bytes
+ 14 files changed, 283 insertions(+), 101 deletions(-)
+ create mode 100644 Pipfile
+ create mode 100644 Pipfile.lock
+ create mode 100644 midi/quantize_track.py
+
+vgmusic-restoration on  main [!] via 🐍 v3.14.5
+❯ clar
+zsh: command not found: clar
+
+vgmusic-restoration on  main [!] via 🐍 v3.14.5
+❯ clear
+
+vgmusic-restoration on  main [!] via 🐍 v3.14.5
+❯ git pull
+remote: Enumerating objects: 17, done.
+remote: Counting objects: 100% (17/17), done.
+remote: Compressing objects: 100% (9/9), done.
+remote: Total 9 (delta 6), reused 0 (delta 0), pack-reused 0 (from 0)
+Unpacking objects: 100% (9/9), 4.75 KiB | 405.00 KiB/s, done.
+From git.xio.vacco.li:jjzazuet/vgmusic-restoration
+   750e516..f9d9c04  main       -> origin/main
+Updating 750e516..f9d9c04
+Fast-forward
+ midi/quantize_track.py                             |  65 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ projects/snes/f-zero/ending-theme/ending-theme.mid | Bin 21501 -> 18103 bytes
+ 2 files changed, 65 insertions(+)
+
+vgmusic-restoration on  main [!] via 🐍 v3.14.5
+❯ cd ..
+
+~/code
+❯ clear
+
+~/code
+❯ ls -la
+total 24
+drwxr-xr-x   9 jjzazuet  staff    288 May 25 16:14 .
+drwxr-x---+ 47 jjzazuet  staff   1504 Jun  8 03:16 ..
+-rw-r--r--@  1 jjzazuet  staff  10244 Jun  8 16:34 .DS_Store
+drwxr-xr-x  16 jjzazuet  staff    512 May 24 13:03 JUCE
+drwxr-xr-x@  5 jjzazuet  staff    160 May 24 14:14 VST_SDK
+drwxr-xr-x  14 jjzazuet  staff    448 Jun  8 03:16 audio-plugin-wrapper
+drwxr-xr-x  17 jjzazuet  staff    544 Nov 29  2025 minilmj
+drwxr-xr-x   8 jjzazuet  staff    256 Nov 13  2025 resume
+drwxr-xr-x  18 jjzazuet  staff    576 Jun  8 16:33 vgmusic-restoration
+
+~/code
+❯ git clone git@github.com:jjzazuet/ableton-mcp.git
+Cloning into 'ableton-mcp'...
+remote: Enumerating objects: 194, done.
+remote: Counting objects: 100% (119/119), done.
+remote: Compressing objects: 100% (67/67), done.
+remote: Total 194 (delta 77), reused 67 (delta 49), pack-reused 75 (from 2)
+Receiving objects: 100% (194/194), 221.59 KiB | 1.57 MiB/s, done.
+Resolving deltas: 100% (90/90), done.
+
+~/code
+❯ cd ableton-mcp
+
+ableton-mcp on  main is 📦 v1.2.0 via 🐍 v3.14.5
+❯ cd /Users/jjzazuet/Library/Preferences/Ableton
+
+Library/Preferences/Ableton
+❯ ls -la
+total 0
+drwxr-xr-x    6 jjzazuet  staff   192 Jun  7 15:35 .
+drwx------+ 289 jjzazuet  staff  9248 Jun  9 00:55 ..
+drwxr-xr-x   12 jjzazuet  staff   384 May 15 13:57 Live 12.3.6
+drwxr-xr-x   11 jjzazuet  staff   352 May 30 00:19 Live 12.3.7
+drwxr-xr-x   13 jjzazuet  staff   416 May 30 00:27 Live 12.3.8
+drwxr-xr-x   18 jjzazuet  staff   576 Jun  8 19:12 Live 12.4
+
+Library/Preferences/Ableton
+❯ cd 12.4
+cd: no such file or directory: 12.4
+
+Library/Preferences/Ableton
+❯ ls -la
+total 0
+drwxr-xr-x    6 jjzazuet  staff   192 Jun  7 15:35 .
+drwx------+ 289 jjzazuet  staff  9248 Jun  9 00:56 ..
+drwxr-xr-x   12 jjzazuet  staff   384 May 15 13:57 Live 12.3.6
+drwxr-xr-x   11 jjzazuet  staff   352 May 30 00:19 Live 12.3.7
+drwxr-xr-x   13 jjzazuet  staff   416 May 30 00:27 Live 12.3.8
+drwxr-xr-x   18 jjzazuet  staff   576 Jun  8 19:12 Live 12.4
+
+Library/Preferences/Ableton
+❯ clear
+
+Library/Preferences/Ableton
+❯ cd Live\ 12.4
+
+Preferences/Ableton/Live 12.4
+❯ clear
+
+Preferences/Ableton/Live 12.4
+❯ ls -la
+total 648
+drwxr-xr-x  18 jjzazuet  staff     576 Jun  8 19:12 .
+drwxr-xr-x   6 jjzazuet  staff     192 Jun  7 15:35 ..
+-rw-r--r--   1 jjzazuet  staff    2883 Jun  7 15:41 AddOns.txt
+drwxr-xr-x   4 jjzazuet  staff     128 Jun  8 19:12 BaseFiles
+drwxr-xr-x   2 jjzazuet  staff      64 Jun  7 15:35 Crash
+-rw-r--r--@  1 jjzazuet  staff      62 Jun  7 15:35 CrashDetection.cfg
+-rw-r--r--@  1 jjzazuet  staff    1638 Jun  8 19:12 CrashRecoveryInfo.cfg
+-rw-r--r--   1 jjzazuet  staff   58726 Jun  8 19:12 Indexer.txt
+-rw-r--r--@  1 jjzazuet  staff    3400 Jun  8 19:12 Library.cfg
+-rw-r--r--   1 jjzazuet  staff  178129 Jun  8 19:12 Log.txt
+-rw-r--r--   1 jjzazuet  staff    2293 Jun  7 15:36 PluginScanner.txt
+-rw-r--r--@  1 jjzazuet  staff   34898 Jun  8 19:12 Preferences.cfg
+drwxr-xr-x@  4 jjzazuet  staff     128 Jun  8 17:08 Undo
+-rw-r--r--@  1 jjzazuet  staff       0 Jun  7 15:35 Undo.lock
+-rw-r--r--@  1 jjzazuet  staff      36 Jun  7 15:35 UsageData.cfg
+drwxr-xr-x   4 jjzazuet  staff     128 Jun  7 15:35 User Remote Scripts
+-rw-r--r--   1 jjzazuet  staff    2010 Jun  7 15:36 WebConnector.txt
+-rw-r--r--   1 jjzazuet  staff    1635 Jun  7 15:37 wc.log
+
+Preferences/Ableton/Live 12.4
+❯ pwd
+/Users/jjzazuet/Library/Preferences/Ableton/Live 12.4
+
+Preferences/Ableton/Live 12.4
+❯ tree
+.
+├── AddOns.txt
+├── BaseFiles
+│   ├── ending-theme-2.als
+│   └── ending-theme.als
+├── Crash
+├── CrashDetection.cfg
+├── CrashRecoveryInfo.cfg
+├── Indexer.txt
+├── Library.cfg
+├── Log.txt
+├── PluginScanner.txt
+├── Preferences.cfg
+├── Undo
+│   ├── 0.band
+│   └── bands.cfg
+├── Undo.lock
+├── UsageData.cfg
+├── User Remote Scripts
+│   ├── InstantMappings-HowTo.txt
+│   └── UserConfiguration.txt
+├── WebConnector.txt
+└── wc.log
+
+5 directories, 18 files
+
+Preferences/Ableton/Live 12.4
+❯ cd ~/Music/Ableton
+
+~/Music/Ableton
+❯ ls -la
+total 0
+drwxr-xr-x   5 jjzazuet  staff  160 May 15 13:12 .
+drwx------+  5 jjzazuet  staff  160 May 17 14:51 ..
+drwxr-xr-x   2 jjzazuet  staff   64 May 15 13:12 Factory Packs
+drwxr-xr-x   2 jjzazuet  staff   64 Jun  8 17:08 Live Recordings
+drwxr-xr-x@ 13 jjzazuet  staff  416 May 15 13:13 User Library
+
+~/Music/Ableton
+❯ clear
+
+~/Music/Ableton
+❯ cd User\ Library
+
+Music/Ableton/User Library
+❯ ls -la
+total 128
+drwxr-xr-x@ 13 jjzazuet  staff  416 May 15 13:13 .
+drwxr-xr-x   5 jjzazuet  staff  160 May 15 13:12 ..
+drwxr-xr-x   2 jjzazuet  staff   64 Jun  7 15:36 Ableton Folder Info
+drwxr-xr-x   2 jjzazuet  staff   64 May 15 13:12 Ableton Project Info
+drwxr-xr-x   2 jjzazuet  staff   64 May 15 13:12 Clips
+drwxr-xr-x   9 jjzazuet  staff  288 May 15 13:12 Defaults
+drwxr-xr-x   2 jjzazuet  staff   64 May 15 13:12 Grooves
+-rw-r--r--@  1 jjzazuet  staff    0 May 15 13:12 Icon?
+drwxr-xr-x   4 jjzazuet  staff  128 May 15 13:12 MIDI Tools
+drwxr-xr-x   5 jjzazuet  staff  160 May 15 13:12 Presets
+drwxr-xr-x   2 jjzazuet  staff   64 May 15 13:12 Samples
+drwxr-xr-x   2 jjzazuet  staff   64 May 15 13:12 Templates
+drwxr-xr-x   2 jjzazuet  staff   64 May 15 13:12 Tunings
+
+Music/Ableton/User Library
+❯ mkdir "Remote Scripts"
+
+Music/Ableton/User Library
+❯ cd Remote\ Scripts
+
+Ableton/User Library/Remote Scripts
+❯ clear
+
+Ableton/User Library/Remote Scripts
+❯ pwd
+/Users/jjzazuet/Music/Ableton/User Library/Remote Scripts
+
+Ableton/User Library/Remote Scripts
+❯ clear
+
+Ableton/User Library/Remote Scripts
+❯ ls -la
+total 0
+drwxr-xr-x   2 jjzazuet  staff   64 Jun  9 01:00 .
+drwxr-xr-x@ 14 jjzazuet  staff  448 Jun  9 01:00 ..
+
+Ableton/User Library/Remote Scripts
+❯ cp -Rv ~/code/ableton-mcp/AbletonMCP_Remote_Script .
+/Users/jjzazuet/code/ableton-mcp/AbletonMCP_Remote_Script -> ./AbletonMCP_Remote_Script
+/Users/jjzazuet/code/ableton-mcp/AbletonMCP_Remote_Script/__init__.py -> ./AbletonMCP_Remote_Script/__init__.py
+
+Ableton/User Library/Remote Scripts
+❯ ls -la
+total 0
+drwxr-xr-x   3 jjzazuet  staff   96 Jun  9 01:00 .
+drwxr-xr-x@ 14 jjzazuet  staff  448 Jun  9 01:00 ..
+drwxr-xr-x   3 jjzazuet  staff   96 Jun  9 01:00 AbletonMCP_Remote_Script
+
+Ableton/User Library/Remote Scripts
+❯ cd ..
+
+Music/Ableton/User Library
+❯ tree
+.
+├── Ableton Folder Info
+├── Ableton Project Info
+├── Clips
+├── Defaults
+│   ├── Audio Effects
+│   ├── Audio to MIDI
+│   │   ├── Drums to MIDI
+│   │   ├── Harmony to MIDI
+│   │   └── Melody to MIDI
+│   ├── Creating Tracks
+│   │   ├── Audio Track
+│   │   └── MIDI Track
+│   ├── Dropping Samples
+│   │   ├── On Device View
+│   │   └── On Drum Rack
+│   ├── Instruments
+│   ├── MIDI Effects
+│   └── Slicing
+├── Grooves
+├── Icon\015
+├── MIDI Tools
+│   ├── Max Generators
+│   └── Max Transformations
+├── Presets
+│   ├── Audio Effects
+│   │   ├── Audio Effect Rack
+│   │   ├── Auto Filter
+│   │   ├── Auto Filter Legacy
+│   │   ├── Auto Pan Legacy
+│   │   ├── Auto Pan-Tremolo
+│   │   ├── Auto Shift
+│   │   ├── Beat Repeat
+│   │   ├── Channel EQ
+│   │   ├── Chorus
+│   │   ├── Chorus-Ensemble
+│   │   ├── Compressor
+│   │   ├── Delay
+│   │   ├── EQ Three
+│   │   ├── Erosion
+│   │   ├── Flanger
+│   │   ├── Gate
+│   │   ├── Grain Delay
+│   │   ├── Limiter
+│   │   ├── Looper
+│   │   ├── Phaser
+│   │   ├── Phaser-Flanger
+│   │   ├── Redux
+│   │   ├── Redux Legacy
+│   │   ├── Repitch
+│   │   ├── Reverb
+│   │   ├── Saturator
+│   │   ├── Tuner
+│   │   └── Utility
+│   ├── Instruments
+│   │   ├── Drift
+│   │   ├── Drum Rack
+│   │   ├── Drum Sampler
+│   │   ├── External Instrument
+│   │   ├── Impulse
+│   │   ├── Instrument Rack
+│   │   └── Simpler
+│   └── MIDI Effects
+│       ├── Arpeggiator
+│       ├── CC Control
+│       ├── Chord
+│       ├── MIDI Effect Rack
+│       ├── Note Length
+│       ├── Pitch
+│       ├── Random
+│       ├── Scale
+│       └── Velocity
+├── Remote Scripts
+│   └── AbletonMCP_Remote_Script
+│       └── __init__.py
+├── Samples
+├── Templates
+└── Tunings
+
+76 directories, 2 files
+
+Music/Ableton/User Library
+❯ cd
+
+~
+❯ clear
+
+~
+❯ cd code
+
+~/code
+❯ cd ableton-mcp
+
+ableton-mcp on  main is 📦 v1.2.0 via 🐍 v3.14.5
+❯ clear
+
+ableton-mcp on  main is 📦 v1.2.0 via 🐍 v3.14.5
+❯ git pull
+Already up to date.
+
+ableton-mcp on  main is 📦 v1.2.0 via 🐍 v3.14.5
+❯ git pull
+remote: Enumerating objects: 12, done.
+remote: Counting objects: 100% (12/12), done.
+remote: Compressing objects: 100% (5/5), done.
+remote: Total 9 (delta 4), reused 9 (delta 4), pack-reused 0 (from 0)
+Unpacking objects: 100% (9/9), 19.70 KiB | 2.46 MiB/s, done.
+From github.com:jjzazuet/ableton-mcp
+   3bada4e..7a6c39d  main       -> origin/main
+Updating 3bada4e..7a6c39d
+Fast-forward
+ MCP_Server/Pipfile      |  12 +++
+ MCP_Server/Pipfile.lock | 687 
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ MCP_Server/server.py    |  16 ++-
+ 3 files changed, 713 insertions(+), 2 deletions(-)
+ create mode 100644 MCP_Server/Pipfile
+ create mode 100644 MCP_Server/Pipfile.lock
+
+ableton-mcp on  main is 📦 v1.2.0 via 🐍 v3.14.5
+❯ clear
+
+ableton-mcp on  main is 📦 v1.2.0 via 🐍 v3.14.5
+❯ pipenv install
+Creating a virtualenv for this project
+Pipfile: /Users/jjzazuet/code/ableton-mcp/Pipfile
+Using default python from /usr/local/Cellar/pipenv/2026.6.1/libexec/bin/python 3.14.5 to create virtualenv...
+⠹ Creating virtual environment...created virtual environment CPython3.14.5.final.0-64-x86_64 in 691ms
+  creator CPython3macOsBrew(dest=/Users/jjzazuet/.local/share/virtualenvs/ableton-mcp-EnpEd2Oi, clear=False, no_vcs_ignore=False, global=False)
+  seeder FromAppData(download=False, pip=bundle, via=copy, app_data_dir=/Users/jjzazuet/Library/Caches/virtualenv)
+    added seed packages: pip==26.1
+  activators BashActivator,CShellActivator,FishActivator,NushellActivator,PowerShellActivator,PythonActivator,XonshActivator
+
+✔ Successfully created virtual environment!
+Virtualenv location: /Users/jjzazuet/.local/share/virtualenvs/ableton-mcp-EnpEd2Oi
+Creating a Pipfile for this project...
+Pipfile.lock not found, creating...
+Locking  dependencies...
+Locking  dependencies...
+Updated Pipfile.lock (be43225d7d56471fd9b60269c82252cc19448eb3578abebecdcd914e2213171e)!
+To activate this project's virtualenv, run pipenv shell.
+Alternatively, run a command inside the virtualenv with pipenv run.
+Installing dependencies from Pipfile.lock (13171e)...
+
+ableton-mcp on  main [?] is 📦 v1.2.0 via 🐍 v3.14.5 took 2s
+❯ clear
+
+ableton-mcp on  main [?] is 📦 v1.2.0 via 🐍 v3.14.5
+❯ MCP_TRANSPORT=sse DISABLE_TELEMETRY=true pipenv run python server.py
+/usr/local/Cellar/python@3.14/3.14.5/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python: can't open file 
+'/Users/jjzazuet/code/ableton-mcp/server.py': [Errno 2] No such file or directory
+
+ableton-mcp on  main [?] is 📦 v1.2.0 via 🐍 v3.14.5
+❯ ls -la
+total 736
+drwxr-xr-x  16 jjzazuet  staff     512 Jun  9 01:20 .
+drwxr-xr-x  10 jjzazuet  staff     320 Jun  9 00:53 ..
+-rw-r--r--@  1 jjzazuet  staff    6148 Jun  9 00:53 .DS_Store
+drwxr-xr-x  15 jjzazuet  staff     480 Jun  9 01:19 .git
+-rw-r--r--   1 jjzazuet  staff     655 Jun  9 00:53 .gitignore
+-rw-r--r--   1 jjzazuet  staff       5 Jun  9 00:53 .python-version
+drwxr-xr-x   3 jjzazuet  staff      96 Jun  9 00:53 AbletonMCP_Remote_Script
+-rw-r--r--   1 jjzazuet  staff     435 Jun  9 00:53 Dockerfile
+-rw-r--r--   1 jjzazuet  staff    1071 Jun  9 00:53 LICENSE
+drwxr-xr-x   8 jjzazuet  staff     256 Jun  9 01:19 MCP_Server
+-rw-r--r--   1 jjzazuet  staff     139 Jun  9 01:20 Pipfile
+-rw-r--r--   1 jjzazuet  staff     454 Jun  9 01:20 Pipfile.lock
+-rw-r--r--   1 jjzazuet  staff    7735 Jun  9 00:53 README.md
+-rw-r--r--   1 jjzazuet  staff     822 Jun  9 00:53 pyproject.toml
+-rw-r--r--   1 jjzazuet  staff     463 Jun  9 00:53 smithery.yaml
+-rw-r--r--   1 jjzazuet  staff  323638 Jun  9 00:53 uv.lock
+
+ableton-mcp on  main [?] is 📦 v1.2.0 via 🐍 v3.14.5
+❯ MCP_TRANSPORT=sse DISABLE_TELEMETRY=true pipenv run python ./MCP_Server/server.py
+Traceback (most recent call last):
+  File "/Users/jjzazuet/code/ableton-mcp/./MCP_Server/server.py", line 2, in <module>
+    from mcp.server.fastmcp import FastMCP, Context
+ModuleNotFoundError: No module named 'mcp'
+
+ableton-mcp on  main [?] is 📦 v1.2.0 via 🐍 v3.14.5
+❯ clear
+
+ableton-mcp on  main [?] is 📦 v1.2.0 via 🐍 v3.14.5
+❯ git pull
+remote: Enumerating objects: 17, done.
+remote: Counting objects: 100% (17/17), done.
+remote: Compressing objects: 100% (3/3), done.
+remote: Total 11 (delta 8), reused 11 (delta 8), pack-reused 0 (from 0)
+Unpacking objects: 100% (11/11), 1.24 KiB | 105.00 KiB/s, done.
+From github.com:jjzazuet/ableton-mcp
+   7a6c39d..bc8ef20  main       -> origin/main
+Updating 7a6c39d..bc8ef20
+Fast-forward
+ MCP_Server/Pipfile                |  1 +
+ MCP_Server/Pipfile.lock           |  5 +++--
+ MCP_Server/server.py              | 19 +++++++++++++++----
+ MCP_Server/telemetry_decorator.py |  2 +-
+ 4 files changed, 20 insertions(+), 7 deletions(-)
+
+ableton-mcp on  main [?] is 📦 v1.2.0 via 🐍 v3.14.5
+❯ clear
+
+ableton-mcp on  main [?] is 📦 v1.2.0 via 🐍 v3.14.5
+❯ pipenv install
+To activate this project's virtualenv, run pipenv shell.
+Alternatively, run a command inside the virtualenv with pipenv run.
+Installing dependencies from Pipfile.lock (13171e)...
+
+ableton-mcp on  main [?] is 📦 v1.2.0 via 🐍 v3.14.5
+❯ MCP_TRANSPORT=sse DISABLE_TELEMETRY=true MCP_HOST=0.0.0.0 MCP_PORT=9878 pipenv run python server.py
+/usr/local/Cellar/python@3.14/3.14.5/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python: can't open file 
+'/Users/jjzazuet/code/ableton-mcp/server.py': [Errno 2] No such file or directory
+
+ableton-mcp on  main [?] is 📦 v1.2.0 via 🐍 v3.14.5
+❯ pipenv shell
+Launching subshell in virtual environment...
+
+__PIPENV_SHELL_READY__
+
+ableton-mcp on  main [?] is 📦 v1.2.0 via 🐍 v3.14.5 (ableton-mcp)
+❯ MCP_TRANSPORT=sse DISABLE_TELEMETRY=true MCP_HOST=0.0.0.0 MCP_PORT=9878 python server.py
+/usr/local/Cellar/python@3.14/3.14.5/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python: can't open file 
+'/Users/jjzazuet/code/ableton-mcp/server.py': [Errno 2] No such file or directory
+
+ableton-mcp on  main [?] is 📦 v1.2.0 via 🐍 v3.14.5 (ableton-mcp)
+❯ MCP_TRANSPORT=sse DISABLE_TELEMETRY=true MCP_HOST=0.0.0.0 MCP_PORT=9878 python server.py
+
+ableton-mcp on  main [?] is 📦 v1.2.0 via 🐍 v3.14.5 (ableton-mcp)
+❯
+
+ableton-mcp on  main [?] is 📦 v1.2.0 via 🐍 v3.14.5 took 34s
+❯ clear
+
+ableton-mcp on  main [?] is 📦 v1.2.0 via 🐍 v3.14.5
+❯ MCP_TRANSPORT=sse DISABLE_TELEMETRY=true MCP_HOST=0.0.0.0 MCP_PORT=9878 pipenv run python ./MCP_Server/server.py
+Traceback (most recent call last):
+  File "/Users/jjzazuet/code/ableton-mcp/./MCP_Server/server.py", line 10, in <module>
+    from mcp.server.fastmcp import FastMCP, Context
+ModuleNotFoundError: No module named 'mcp'
+
+ableton-mcp on  main [?] is 📦 v1.2.0 via 🐍 v3.14.5
+❯ git pull
+Already up to date.
+
+ableton-mcp on  main [?] is 📦 v1.2.0 via 🐍 v3.14.5
+❯ git status
+On branch main
+Your branch is up to date with 'origin/main'.
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	Pipfile
+	Pipfile.lock
+
+nothing added to commit but untracked files present (use "git add" to track)
+
+ableton-mcp on  main [?] is 📦 v1.2.0 via 🐍 v3.14.5
+❯ git checkout .
+Updated 0 paths from the index
+
+ableton-mcp on  main [?] is 📦 v1.2.0 via 🐍 v3.14.5
+❯ ls -la
+total 736
+drwxr-xr-x  16 jjzazuet  staff     512 Jun  9 01:20 .
+drwxr-xr-x  10 jjzazuet  staff     320 Jun  9 00:53 ..
+-rw-r--r--@  1 jjzazuet  staff    6148 Jun  9 00:53 .DS_Store
+drwxr-xr-x  15 jjzazuet  staff     480 Jun  9 01:35 .git
+-rw-r--r--   1 jjzazuet  staff     655 Jun  9 00:53 .gitignore
+-rw-r--r--   1 jjzazuet  staff       5 Jun  9 00:53 .python-version
+drwxr-xr-x   3 jjzazuet  staff      96 Jun  9 00:53 AbletonMCP_Remote_Script
+-rw-r--r--   1 jjzazuet  staff     435 Jun  9 00:53 Dockerfile
+-rw-r--r--   1 jjzazuet  staff    1071 Jun  9 00:53 LICENSE
+drwxr-xr-x   8 jjzazuet  staff     256 Jun  9 01:32 MCP_Server
+-rw-r--r--   1 jjzazuet  staff     139 Jun  9 01:20 Pipfile
+-rw-r--r--   1 jjzazuet  staff     454 Jun  9 01:20 Pipfile.lock
+-rw-r--r--   1 jjzazuet  staff    7735 Jun  9 00:53 README.md
+-rw-r--r--   1 jjzazuet  staff     822 Jun  9 00:53 pyproject.toml
+-rw-r--r--   1 jjzazuet  staff     463 Jun  9 00:53 smithery.yaml
+-rw-r--r--   1 jjzazuet  staff  323638 Jun  9 00:53 uv.lock
+
+ableton-mcp on  main [?] is 📦 v1.2.0 via 🐍 v3.14.5
+❯ rm -rfv Pipfile*
+Pipfile
+Pipfile.lock
+
+ableton-mcp on  main is 📦 v1.2.0 via 🐍 v3.14.5
+❯ clear
+
+ableton-mcp on  main is 📦 v1.2.0 via 🐍 v3.14.5
+❯ cd MCP_Server
+
+ableton-mcp/MCP_Server on  main via 🐍 v3.14.5
+❯ clear
+
+ableton-mcp/MCP_Server on  main via 🐍 v3.14.5
+❯ ls -l
+total 240
+-rw-r--r--  1 jjzazuet  staff    198 Jun  9 01:32 Pipfile
+-rw-r--r--  1 jjzazuet  staff  46804 Jun  9 01:32 Pipfile.lock
+-rw-r--r--  1 jjzazuet  staff    206 Jun  9 00:53 __init__.py
+-rw-r--r--  1 jjzazuet  staff  38409 Jun  9 01:32 server.py
+-rw-r--r--  1 jjzazuet  staff  11558 Jun  9 00:53 telemetry.py
+-rw-r--r--  1 jjzazuet  staff  10495 Jun  9 01:32 telemetry_decorator.py
+
+ableton-mcp/MCP_Server on  main via 🐍 v3.14.5
+❯ clear
+  UW PICO 5.09                                                                 New Buffer
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                                                     [ Read 13 lines ]
+^G Get Help               ^O WriteOut               ^R Read File              ^Y Prev Pg                ^K Cut Text               ^C Cur Pos
+^X Exit                   ^J Justify                ^W Where is               ^V Next Pg                ^U UnCut Text             ^T To Spell
+  UW PICO 5.09                                                                 New Buffer
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                                                     [ Read 13 lines ]
+^G Get Help               ^O WriteOut               ^R Read File              ^Y Prev Pg                ^K Cut Text               ^C Cur Pos
+^X Exit                   ^J Justify                ^W Where is               ^V Next Pg                ^U UnCut Text             ^T To Spell
+
+ableton-mcp/MCP_Server on  main via 🐍 v3.14.5
+❯ pipenv install
+Warning: Python 3.13 was not found on your system...
+Neither 'pyenv' nor 'asdf' could be found to install Python.
+You can specify specific versions of Python with:
+$ pipenv --python path/to/python
+
+ableton-mcp/MCP_Server on  main via 🐍 v3.14.5 took 2s
+❯ python3
+Python 3.14.5 (main, May 10 2026, 10:21:34) [Clang 15.0.0 (clang-1500.0.40.1)] on darwin
+Type "help", "copyright", "credits" or "license" for more information.
+>>>
+
+ableton-mcp/MCP_Server on  main via 🐍 v3.14.5 took 2s
+❯ nano Pipfile
+
+ableton-mcp/MCP_Server on  main via 🐍 v3.14.5 took 3s
+❯ nano Pipfile
+
+ableton-mcp/MCP_Server on  main [!] via 🐍 v3.14.5 took 4s
+❯ clear
+
+ableton-mcp/MCP_Server on  main [!] via 🐍 v3.14.5
+❯ pipenv install
+Creating a virtualenv for this project
+Pipfile: /Users/jjzazuet/code/ableton-mcp/MCP_Server/Pipfile
+Using /usr/local/bin/python3 3.14.5 to create virtualenv...
+⠧ Creating virtual environment...created virtual environment CPython3.14.5.final.0-64-x86_64 in 399ms
+  creator CPython3macOsBrew(dest=/Users/jjzazuet/.local/share/virtualenvs/MCP_Server-VRPpTMIn, clear=False, no_vcs_ignore=False, global=False)
+  seeder FromAppData(download=False, pip=bundle, via=copy, app_data_dir=/Users/jjzazuet/Library/Caches/virtualenv)
+    added seed packages: pip==26.1
+  activators BashActivator,CShellActivator,FishActivator,NushellActivator,PowerShellActivator,PythonActivator,XonshActivator
+
+✔ Successfully created virtual environment!
+Virtualenv location: /Users/jjzazuet/.local/share/virtualenvs/MCP_Server-VRPpTMIn
+Pipfile.lock (883661e33ca9c389894366799a3ceb82f39566dbda78d2e59dc1566886f290ec) out of date: run `pipenv lock` to update to
+(eb1145db8b50ac4c2ff8cd6e29730e625e6338d507e57d3bea429e1b4d0725be)...
+Locking  dependencies...
+Building requirements...
+Resolving dependencies...
+✔ Success!
+⠧ Locking packages...Warning: WARNING:pipenv.patched.pip._vendor.urllib3.connectionpool:Connection pool is full, discarding connection: pypi.org. 
+Connection pool size: 10
+WARNING:pipenv.patched.pip._vendor.urllib3.connectionpool:Connection pool is full, discarding connection: pypi.org. Connection pool size: 10
+WARNING:pipenv.patched.pip._vendor.urllib3.connectionpool:Connection pool is full, discarding connection: pypi.org. Connection pool size: 10
+WARNING:pipenv.patched.pip._vendor.urllib3.connectionpool:Connection pool is full, discarding connection: pypi.org. Connection pool size: 10
+WARNING:pipenv.patched.pip._vendor.urllib3.connectionpool:Connection pool is full, discarding connection: pypi.org. Connection pool size: 10
+WARNING:pipenv.patched.pip._vendor.urllib3.connectionpool:Connection pool is full, discarding connection: pypi.org. Connection pool size: 10
+Locking  dependencies...
+Updated Pipfile.lock (eb1145db8b50ac4c2ff8cd6e29730e625e6338d507e57d3bea429e1b4d0725be)!
+To activate this project's virtualenv, run pipenv shell.
+Alternatively, run a command inside the virtualenv with pipenv run.
+Installing dependencies from Pipfile.lock (0725be)...
+
+
+ableton-mcp/MCP_Server on  main [!] via 🐍 v3.14.5 took 26s
+❯
+
+ableton-mcp/MCP_Server on  main [!] via 🐍 v3.14.5
+❯ clear
+
+ableton-mcp/MCP_Server on  main [!] via 🐍 v3.14.5
+❯ MCP_TRANSPORT=sse DISABLE_TELEMETRY=true MCP_HOST=0.0.0.0 MCP_PORT=9878 pipenv run python ./server.py
+2026-06-09 01:38:48,419 - AbletonMCPServer - INFO - Starting MCP server via SSE on 0.0.0.0:9878
+INFO:     Started server process [52653]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:9878 (Press CTRL+C to quit)
+INFO:     172.16.1.15:54384 - "POST /sse HTTP/1.1" 405 Method Not Allowed
+2026-06-09 01:41:04,450 - mcp.server.transport_security - WARNING - Invalid Host header: 172.16.1.19:9878
+INFO:     172.16.1.15:54384 - "GET /sse HTTP/1.1" 421 Misdirected Request
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "/Users/jjzazuet/.local/share/virtualenvs/MCP_Server-VRPpTMIn/lib/python3.14/site-packages/uvicorn/protocols/http/h11_impl.py", line 415, in 
+run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        self.scope, self.receive, self.send
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/jjzazuet/.local/share/virtualenvs/MCP_Server-VRPpTMIn/lib/python3.14/site-packages/uvicorn/middleware/proxy_headers.py", line 62, in 
+__call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jjzazuet/.local/share/virtualenvs/MCP_Server-VRPpTMIn/lib/python3.14/site-packages/starlette/applications.py", line 90, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/jjzazuet/.local/share/virtualenvs/MCP_Server-VRPpTMIn/lib/python3.14/site-packages/starlette/middleware/errors.py", line 186, in 
+__call__
+    raise exc
+  File "/Users/jjzazuet/.local/share/virtualenvs/MCP_Server-VRPpTMIn/lib/python3.14/site-packages/starlette/middleware/errors.py", line 164, in 
+__call__
+    await self.app(scope, receive, _send)
+  File "/Users/jjzazuet/.local/share/virtualenvs/MCP_Server-VRPpTMIn/lib/python3.14/site-packages/starlette/middleware/exceptions.py", line 63, in 
+__call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/Users/jjzazuet/.local/share/virtualenvs/MCP_Server-VRPpTMIn/lib/python3.14/site-packages/starlette/_exception_handler.py", line 53, in 
+wrapped_app
+    raise exc
+  File "/Users/jjzazuet/.local/share/virtualenvs/MCP_Server-VRPpTMIn/lib/python3.14/site-packages/starlette/_exception_handler.py", line 42, in 
+wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/jjzazuet/.local/share/virtualenvs/MCP_Server-VRPpTMIn/lib/python3.14/site-packages/starlette/routing.py", line 660, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/jjzazuet/.local/share/virtualenvs/MCP_Server-VRPpTMIn/lib/python3.14/site-packages/starlette/routing.py", line 680, in app
+    await route.handle(scope, receive, send)
+  File "/Users/jjzazuet/.local/share/virtualenvs/MCP_Server-VRPpTMIn/lib/python3.14/site-packages/starlette/routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "/Users/jjzazuet/.local/share/virtualenvs/MCP_Server-VRPpTMIn/lib/python3.14/site-packages/starlette/routing.py", line 64, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/Users/jjzazuet/.local/share/virtualenvs/MCP_Server-VRPpTMIn/lib/python3.14/site-packages/starlette/_exception_handler.py", line 53, in 
+wrapped_app
+    raise exc
+  File "/Users/jjzazuet/.local/share/virtualenvs/MCP_Server-VRPpTMIn/lib/python3.14/site-packages/starlette/_exception_handler.py", line 42, in 
+wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/jjzazuet/.local/share/virtualenvs/MCP_Server-VRPpTMIn/lib/python3.14/site-packages/starlette/routing.py", line 61, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "/Users/jjzazuet/.local/share/virtualenvs/MCP_Server-VRPpTMIn/lib/python3.14/site-packages/mcp/server/fastmcp/server.py", line 917, in 
+sse_endpoint
+    return await handle_sse(request.scope, request.receive, request._send)  # type: ignore[reportPrivateUsage]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jjzazuet/.local/share/virtualenvs/MCP_Server-VRPpTMIn/lib/python3.14/site-packages/mcp/server/fastmcp/server.py", line 840, in 
+handle_sse
+    async with sse.connect_sse(
+               ~~~~~~~~~~~~~~~^
+        scope,
+        ^^^^^^
+        receive,
+        ^^^^^^^^
+        send,
+        ^^^^^
+    ) as streams:
+    ^
+  File "/usr/local/Cellar/python@3.14/3.14.5/Frameworks/Python.framework/Versions/3.14/lib/python3.14/contextlib.py", line 214, in __aenter__
+    return await anext(self.gen)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jjzazuet/.local/share/virtualenvs/MCP_Server-VRPpTMIn/lib/python3.14/site-packages/mcp/server/sse.py", line 137, in connect_sse
+    raise ValueError("Request validation failed")
+ValueError: Request validation failed
+INFO:     172.16.1.15:34284 - "POST /sse HTTP/1.1" 405 Method Not Allowed
+2026-06-09 01:41:10,414 - mcp.server.transport_security - WARNING - Invalid Host header: 172.16.1.19:9878
+INFO:     172.16.1.15:34284 - "GET /sse HTTP/1.1" 421 Misdirected Request
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "/Users/jjzazuet/.local/share/virtualenvs/MCP_Server-VRPpTMIn/lib/python3.14/site-packages/uvicorn/protocols/http/h11_impl.py", line 415, in 
+run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        self.scope, self.receive, self.send
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/jjzazuet/.local/share/virtualenvs/MCP_Server-VRPpTMIn/lib/python3.14/site-packages/uvicorn/middleware/proxy_headers.py", line 62, in 
+__call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jjzazuet/.local/share/virtualenvs/MCP_Server-VRPpTMIn/lib/python3.14/site-packages/starlette/applications.py", line 90, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/jjzazuet/.local/share/virtualenvs/MCP_Server-VRPpTMIn/lib/python3.14/site-packages/starlette/middleware/errors.py", line 186, in 
+__call__
+    raise exc
+  File "/Users/jjzazuet/.local/share/virtualenvs/MCP_Server-VRPpTMIn/lib/python3.14/site-packages/starlette/middleware/errors.py", line 164, in 
+__call__
+    await self.app(scope, receive, _send)
+  File "/Users/jjzazuet/.local/share/virtualenvs/MCP_Server-VRPpTMIn/lib/python3.14/site-packages/starlette/middleware/exceptions.py", line 63, in 
+__call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/Users/jjzazuet/.local/share/virtualenvs/MCP_Server-VRPpTMIn/lib/python3.14/site-packages/starlette/_exception_handler.py", line 53, in 
+wrapped_app
+    raise exc
+  File "/Users/jjzazuet/.local/share/virtualenvs/MCP_Server-VRPpTMIn/lib/python3.14/site-packages/starlette/_exception_handler.py", line 42, in 
+wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/jjzazuet/.local/share/virtualenvs/MCP_Server-VRPpTMIn/lib/python3.14/site-packages/starlette/routing.py", line 660, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/jjzazuet/.local/share/virtualenvs/MCP_Server-VRPpTMIn/lib/python3.14/site-packages/starlette/routing.py", line 680, in app
+    await route.handle(scope, receive, send)
+  File "/Users/jjzazuet/.local/share/virtualenvs/MCP_Server-VRPpTMIn/lib/python3.14/site-packages/starlette/routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "/Users/jjzazuet/.local/share/virtualenvs/MCP_Server-VRPpTMIn/lib/python3.14/site-packages/starlette/routing.py", line 64, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/Users/jjzazuet/.local/share/virtualenvs/MCP_Server-VRPpTMIn/lib/python3.14/site-packages/starlette/_exception_handler.py", line 53, in 
+wrapped_app
+    raise exc
+  File "/Users/jjzazuet/.local/share/virtualenvs/MCP_Server-VRPpTMIn/lib/python3.14/site-packages/starlette/_exception_handler.py", line 42, in 
+wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/jjzazuet/.local/share/virtualenvs/MCP_Server-VRPpTMIn/lib/python3.14/site-packages/starlette/routing.py", line 61, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "/Users/jjzazuet/.local/share/virtualenvs/MCP_Server-VRPpTMIn/lib/python3.14/site-packages/mcp/server/fastmcp/server.py", line 917, in 
+sse_endpoint
+    return await handle_sse(request.scope, request.receive, request._send)  # type: ignore[reportPrivateUsage]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jjzazuet/.local/share/virtualenvs/MCP_Server-VRPpTMIn/lib/python3.14/site-packages/mcp/server/fastmcp/server.py", line 840, in 
+handle_sse
+    async with sse.connect_sse(
+               ~~~~~~~~~~~~~~~^
+        scope,
+        ^^^^^^
+        receive,
+        ^^^^^^^^
+        send,
+        ^^^^^
+    ) as streams:
+    ^
+  File "/usr/local/Cellar/python@3.14/3.14.5/Frameworks/Python.framework/Versions/3.14/lib/python3.14/contextlib.py", line 214, in __aenter__
+    return await anext(self.gen)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jjzazuet/.local/share/virtualenvs/MCP_Server-VRPpTMIn/lib/python3.14/site-packages/mcp/server/sse.py", line 137, in connect_sse
+    raise ValueError("Request validation failed")
+ValueError: Request validation failed
+INFO:     172.16.1.15:34294 - "POST /sse HTTP/1.1" 405 Method Not Allowed
+2026-06-09 01:41:11,758 - mcp.server.transport_security - WARNING - Invalid Host header: 172.16.1.19:9878
+INFO:     172.16.1.15:34294 - "GET /sse HTTP/1.1" 421 Misdirected Request
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "/Users/jjzazuet/.local/share/virtualenvs/MCP_Server-VRPpTMIn/lib/python3.14/site-packages/uvicorn/protocols/http/h11_impl.py", line 415, in 
+run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        self.scope, self.receive, self.send
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/jjzazuet/.local/share/virtualenvs/MCP_Server-VRPpTMIn/lib/python3.14/site-packages/uvicorn/middleware/proxy_headers.py", line 62, in 
+__call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jjzazuet/.local/share/virtualenvs/MCP_Server-VRPpTMIn/lib/python3.14/site-packages/starlette/applications.py", line 90, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/jjzazuet/.local/share/virtualenvs/MCP_Server-VRPpTMIn/lib/python3.14/site-packages/starlette/middleware/errors.py", line 186, in 
+__call__
+    raise exc
+  File "/Users/jjzazuet/.local/share/virtualenvs/MCP_Server-VRPpTMIn/lib/python3.14/site-packages/starlette/middleware/errors.py", line 164, in 
+__call__
+    await self.app(scope, receive, _send)
+  File "/Users/jjzazuet/.local/share/virtualenvs/MCP_Server-VRPpTMIn/lib/python3.14/site-packages/starlette/middleware/exceptions.py", line 63, in 
+__call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/Users/jjzazuet/.local/share/virtualenvs/MCP_Server-VRPpTMIn/lib/python3.14/site-packages/starlette/_exception_handler.py", line 53, in 
+wrapped_app
+    raise exc
+  File "/Users/jjzazuet/.local/share/virtualenvs/MCP_Server-VRPpTMIn/lib/python3.14/site-packages/starlette/_exception_handler.py", line 42, in 
+wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/jjzazuet/.local/share/virtualenvs/MCP_Server-VRPpTMIn/lib/python3.14/site-packages/starlette/routing.py", line 660, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/jjzazuet/.local/share/virtualenvs/MCP_Server-VRPpTMIn/lib/python3.14/site-packages/starlette/routing.py", line 680, in app
+    await route.handle(scope, receive, send)
+  File "/Users/jjzazuet/.local/share/virtualenvs/MCP_Server-VRPpTMIn/lib/python3.14/site-packages/starlette/routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "/Users/jjzazuet/.local/share/virtualenvs/MCP_Server-VRPpTMIn/lib/python3.14/site-packages/starlette/routing.py", line 64, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/Users/jjzazuet/.local/share/virtualenvs/MCP_Server-VRPpTMIn/lib/python3.14/site-packages/starlette/_exception_handler.py", line 53, in 
+wrapped_app
+    raise exc
+  File "/Users/jjzazuet/.local/share/virtualenvs/MCP_Server-VRPpTMIn/lib/python3.14/site-packages/starlette/_exception_handler.py", line 42, in 
+wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/jjzazuet/.local/share/virtualenvs/MCP_Server-VRPpTMIn/lib/python3.14/site-packages/starlette/routing.py", line 61, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "/Users/jjzazuet/.local/share/virtualenvs/MCP_Server-VRPpTMIn/lib/python3.14/site-packages/mcp/server/fastmcp/server.py", line 917, in 
+sse_endpoint
+    return await handle_sse(request.scope, request.receive, request._send)  # type: ignore[reportPrivateUsage]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jjzazuet/.local/share/virtualenvs/MCP_Server-VRPpTMIn/lib/python3.14/site-packages/mcp/server/fastmcp/server.py", line 840, in 
+handle_sse
+    async with sse.connect_sse(
+               ~~~~~~~~~~~~~~~^
+        scope,
+        ^^^^^^
+        receive,
+        ^^^^^^^^
+        send,
+        ^^^^^
+    ) as streams:
+    ^
+  File "/usr/local/Cellar/python@3.14/3.14.5/Frameworks/Python.framework/Versions/3.14/lib/python3.14/contextlib.py", line 214, in __aenter__
+    return await anext(self.gen)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jjzazuet/.local/share/virtualenvs/MCP_Server-VRPpTMIn/lib/python3.14/site-packages/mcp/server/sse.py", line 137, in connect_sse
+    raise ValueError("Request validation failed")
+ValueError: Request validation failed
+INFO:     172.16.1.15:34300 - "POST /sse HTTP/1.1" 405 Method Not Allowed
+2026-06-09 01:41:16,312 - mcp.server.transport_security - WARNING - Invalid Host header: 172.16.1.19:9878
+INFO:     172.16.1.15:34300 - "GET /sse HTTP/1.1" 421 Misdirected Request
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "/Users/jjzazuet/.local/share/virtualenvs/MCP_Server-VRPpTMIn/lib/python3.14/site-packages/uvicorn/protocols/http/h11_impl.py", line 415, in 
+run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        self.scope, self.receive, self.send
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/jjzazuet/.local/share/virtualenvs/MCP_Server-VRPpTMIn/lib/python3.14/site-packages/uvicorn/middleware/proxy_headers.py", line 62, in 
+__call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jjzazuet/.local/share/virtualenvs/MCP_Server-VRPpTMIn/lib/python3.14/site-packages/starlette/applications.py", line 90, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/jjzazuet/.local/share/virtualenvs/MCP_Server-VRPpTMIn/lib/python3.14/site-packages/starlette/middleware/errors.py", line 186, in 
+__call__
+    raise exc
+  File "/Users/jjzazuet/.local/share/virtualenvs/MCP_Server-VRPpTMIn/lib/python3.14/site-packages/starlette/middleware/errors.py", line 164, in 
+__call__
+    await self.app(scope, receive, _send)
+  File "/Users/jjzazuet/.local/share/virtualenvs/MCP_Server-VRPpTMIn/lib/python3.14/site-packages/starlette/middleware/exceptions.py", line 63, in 
+__call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/Users/jjzazuet/.local/share/virtualenvs/MCP_Server-VRPpTMIn/lib/python3.14/site-packages/starlette/_exception_handler.py", line 53, in 
+wrapped_app
+    raise exc
+  File "/Users/jjzazuet/.local/share/virtualenvs/MCP_Server-VRPpTMIn/lib/python3.14/site-packages/starlette/_exception_handler.py", line 42, in 
+wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/jjzazuet/.local/share/virtualenvs/MCP_Server-VRPpTMIn/lib/python3.14/site-packages/starlette/routing.py", line 660, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/jjzazuet/.local/share/virtualenvs/MCP_Server-VRPpTMIn/lib/python3.14/site-packages/starlette/routing.py", line 680, in app
+    await route.handle(scope, receive, send)
+  File "/Users/jjzazuet/.local/share/virtualenvs/MCP_Server-VRPpTMIn/lib/python3.14/site-packages/starlette/routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "/Users/jjzazuet/.local/share/virtualenvs/MCP_Server-VRPpTMIn/lib/python3.14/site-packages/starlette/routing.py", line 64, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/Users/jjzazuet/.local/share/virtualenvs/MCP_Server-VRPpTMIn/lib/python3.14/site-packages/starlette/_exception_handler.py", line 53, in 
+wrapped_app
+    raise exc
+  File "/Users/jjzazuet/.local/share/virtualenvs/MCP_Server-VRPpTMIn/lib/python3.14/site-packages/starlette/_exception_handler.py", line 42, in 
+wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/jjzazuet/.local/share/virtualenvs/MCP_Server-VRPpTMIn/lib/python3.14/site-packages/starlette/routing.py", line 61, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "/Users/jjzazuet/.local/share/virtualenvs/MCP_Server-VRPpTMIn/lib/python3.14/site-packages/mcp/server/fastmcp/server.py", line 917, in 
+sse_endpoint
+    return await handle_sse(request.scope, request.receive, request._send)  # type: ignore[reportPrivateUsage]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jjzazuet/.local/share/virtualenvs/MCP_Server-VRPpTMIn/lib/python3.14/site-packages/mcp/server/fastmcp/server.py", line 840, in 
+handle_sse
+    async with sse.connect_sse(
+               ~~~~~~~~~~~~~~~^
+        scope,
+        ^^^^^^
+        receive,
+        ^^^^^^^^
+        send,
+        ^^^^^
+    ) as streams:
+    ^
+  File "/usr/local/Cellar/python@3.14/3.14.5/Frameworks/Python.framework/Versions/3.14/lib/python3.14/contextlib.py", line 214, in __aenter__
+    return await anext(self.gen)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jjzazuet/.local/share/virtualenvs/MCP_Server-VRPpTMIn/lib/python3.14/site-packages/mcp/server/sse.py", line 137, in connect_sse
+    raise ValueError("Request validation failed")
+ValueError: Request validation failed
+INFO:     172.16.1.15:34308 - "POST /sse HTTP/1.1" 405 Method Not Allowed
+2026-06-09 01:41:17,781 - mcp.server.transport_security - WARNING - Invalid Host header: 172.16.1.19:9878
+INFO:     172.16.1.15:34308 - "GET /sse HTTP/1.1" 421 Misdirected Request
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "/Users/jjzazuet/.local/share/virtualenvs/MCP_Server-VRPpTMIn/lib/python3.14/site-packages/uvicorn/protocols/http/h11_impl.py", line 415, in 
+run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        self.scope, self.receive, self.send
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/jjzazuet/.local/share/virtualenvs/MCP_Server-VRPpTMIn/lib/python3.14/site-packages/uvicorn/middleware/proxy_headers.py", line 62, in 
+__call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jjzazuet/.local/share/virtualenvs/MCP_Server-VRPpTMIn/lib/python3.14/site-packages/starlette/applications.py", line 90, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/jjzazuet/.local/share/virtualenvs/MCP_Server-VRPpTMIn/lib/python3.14/site-packages/starlette/middleware/errors.py", line 186, in 
+__call__
+    raise exc
+  File "/Users/jjzazuet/.local/share/virtualenvs/MCP_Server-VRPpTMIn/lib/python3.14/site-packages/starlette/middleware/errors.py", line 164, in 
+__call__
+    await self.app(scope, receive, _send)
+  File "/Users/jjzazuet/.local/share/virtualenvs/MCP_Server-VRPpTMIn/lib/python3.14/site-packages/starlette/middleware/exceptions.py", line 63, in 
+__call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/Users/jjzazuet/.local/share/virtualenvs/MCP_Server-VRPpTMIn/lib/python3.14/site-packages/starlette/_exception_handler.py", line 53, in 
+wrapped_app
+    raise exc
+  File "/Users/jjzazuet/.local/share/virtualenvs/MCP_Server-VRPpTMIn/lib/python3.14/site-packages/starlette/_exception_handler.py", line 42, in 
+wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/jjzazuet/.local/share/virtualenvs/MCP_Server-VRPpTMIn/lib/python3.14/site-packages/starlette/routing.py", line 660, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/jjzazuet/.local/share/virtualenvs/MCP_Server-VRPpTMIn/lib/python3.14/site-packages/starlette/routing.py", line 680, in app
+    await route.handle(scope, receive, send)
+  File "/Users/jjzazuet/.local/share/virtualenvs/MCP_Server-VRPpTMIn/lib/python3.14/site-packages/starlette/routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "/Users/jjzazuet/.local/share/virtualenvs/MCP_Server-VRPpTMIn/lib/python3.14/site-packages/starlette/routing.py", line 64, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/Users/jjzazuet/.local/share/virtualenvs/MCP_Server-VRPpTMIn/lib/python3.14/site-packages/starlette/_exception_handler.py", line 53, in 
+wrapped_app
+    raise exc
+  File "/Users/jjzazuet/.local/share/virtualenvs/MCP_Server-VRPpTMIn/lib/python3.14/site-packages/starlette/_exception_handler.py", line 42, in 
+wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/jjzazuet/.local/share/virtualenvs/MCP_Server-VRPpTMIn/lib/python3.14/site-packages/starlette/routing.py", line 61, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "/Users/jjzazuet/.local/share/virtualenvs/MCP_Server-VRPpTMIn/lib/python3.14/site-packages/mcp/server/fastmcp/server.py", line 917, in 
+sse_endpoint
+    return await handle_sse(request.scope, request.receive, request._send)  # type: ignore[reportPrivateUsage]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jjzazuet/.local/share/virtualenvs/MCP_Server-VRPpTMIn/lib/python3.14/site-packages/mcp/server/fastmcp/server.py", line 840, in 
+handle_sse
+    async with sse.connect_sse(
+               ~~~~~~~~~~~~~~~^
+        scope,
+        ^^^^^^
+        receive,
+        ^^^^^^^^
+        send,
+        ^^^^^
+    ) as streams:
+    ^
+  File "/usr/local/Cellar/python@3.14/3.14.5/Frameworks/Python.framework/Versions/3.14/lib/python3.14/contextlib.py", line 214, in __aenter__
+    return await anext(self.gen)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jjzazuet/.local/share/virtualenvs/MCP_Server-VRPpTMIn/lib/python3.14/site-packages/mcp/server/sse.py", line 137, in connect_sse
+    raise ValueError("Request validation failed")
+ValueError: Request validation failed
+
