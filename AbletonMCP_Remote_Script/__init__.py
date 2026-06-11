@@ -9,6 +9,9 @@ import threading
 import time
 import traceback
 
+# Live 12 MIDI Remote Script note API
+from Live.Clip import MidiNoteSpecification
+
 # Change queue import for Python 2
 try:
     import Queue as queue  # Python 2
@@ -611,10 +614,10 @@ class AbletonMCP(ControlSurface):
             raise
 
     def _add_notes_to_clip(self, track_index, clip_index, notes):
-        """Add MIDI notes to a clip using the Live 11+ add_new_notes API.
+        """Add MIDI notes to a clip using the Live 12 add_new_notes API.
         
         Appends notes without affecting existing notes or losing MPE data.
-        Uses the new add_new_notes(dict) API available since Live 11.
+        Uses MidiNoteSpecification objects (not dicts).
         """
         try:
             if track_index < 0 or track_index >= len(self._song.tracks):
@@ -632,25 +635,19 @@ class AbletonMCP(ControlSurface):
             
             clip = clip_slot.clip
             
-            # Build note specifications for the new Live 11+ API
+            # Build MidiNoteSpecification objects (Live 12 API)
             note_specs = []
             for note in notes:
-                # Keep the spec minimal — only required fields
-                # to avoid C++ type conversion issues with the TNoteSpecification struct
-                spec = {
-                    "pitch": int(note.get("pitch", 60)),
-                    "start_time": note.get("start_time", 0.0),
-                    "duration": note.get("duration", 0.25),
-                }
-                # Only add optional fields if explicitly provided
-                if "velocity" in note:
-                    spec["velocity"] = note["velocity"]
-                if note.get("mute", False):
-                    spec["mute"] = True
-                note_specs.append(spec)
+                note_specs.append(MidiNoteSpecification(
+                    pitch=int(note.get("pitch", 60)),
+                    start_time=float(note.get("start_time", 0.0)),
+                    duration=float(note.get("duration", 0.25)),
+                    velocity=float(note.get("velocity", 100)),
+                    mute=bool(note.get("mute", False)),
+                ))
             
-            # add_new_notes appends notes without triggering the old-API warning
-            clip.add_new_notes({"notes": note_specs})
+            # add_new_notes accepts a tuple of MidiNoteSpecification objects
+            clip.add_new_notes(tuple(note_specs))
             
             result = {
                 "note_count": len(notes)
@@ -661,11 +658,10 @@ class AbletonMCP(ControlSurface):
             raise
 
     def _replace_clip_notes(self, track_index, clip_index, notes):
-        """Replace ALL MIDI notes in a clip using the Live 11+ API.
+        """Replace ALL MIDI notes in a clip using the Live 12 API.
         
-        First clears existing notes via remove_notes, then adds new
-        ones via add_new_notes to preserve MPE/probability data on
-        the new notes.
+        Clears existing notes via remove_notes_extended, then adds new
+        ones via add_new_notes with MidiNoteSpecification objects.
         """
         try:
             if track_index < 0 or track_index >= len(self._song.tracks):
@@ -683,27 +679,35 @@ class AbletonMCP(ControlSurface):
             
             clip = clip_slot.clip
             
-            # Clear existing notes
-            # Live API: remove_notes(from_time, from_pitch, time_span, pitch_span)
-            clip.remove_notes(0.0, 0, clip.length, 128)
+            # Clear all existing notes (Live 12 API)
+            clip.remove_notes_extended(
+                from_time=0.0, from_pitch=0,
+                time_span=float(clip.length), pitch_span=128
+            )
             
-            # Build note specifications for the new Live 11+ API
+            # Build MidiNoteSpecification objects (Live 12 API)
             note_specs = []
             for note in notes:
-                spec = {
-                    "pitch": int(note.get("pitch", 60)),
-                    "start_time": note.get("start_time", 0.0),
-                    "duration": note.get("duration", 0.25),
-                }
-                if "velocity" in note:
-                    spec["velocity"] = note["velocity"]
-                if note.get("mute", False):
-                    spec["mute"] = True
-                note_specs.append(spec)
+                note_specs.append(MidiNoteSpecification(
+                    pitch=int(note.get("pitch", 60)),
+                    start_time=float(note.get("start_time", 0.0)),
+                    duration=float(note.get("duration", 0.25)),
+                    velocity=float(note.get("velocity", 100)),
+                    mute=bool(note.get("mute", False)),
+                ))
             
-            # add_new_notes is the Live 11+ API that preserves MPE data
+            # add_new_notes accepts a tuple of MidiNoteSpecification objects
             if note_specs:
-                clip.add_new_notes({"notes": note_specs})
+                clip.add_new_notes(tuple(note_specs))
+            
+            result = {
+                "note_count": len(notes),
+                "replaced": True
+            }
+            return result
+        except Exception as e:
+            self.log_message("Error replacing clip notes: " + str(e))
+            raise
             
             result = {
                 "note_count": len(notes),
@@ -717,7 +721,7 @@ class AbletonMCP(ControlSurface):
     def _delete_clip_notes(self, track_index, clip_index, from_time=0.0, to_time=None):
         """Delete MIDI notes from a clip in a time range.
         
-        Uses Live's clip.remove_notes(from_pitch, from_time, pitch_span, time_span).
+        Uses Live's clip.remove_notes_extended(from_time, from_pitch, time_span, pitch_span).
         Defaults to removing ALL notes if no time range specified.
         """
         try:
@@ -744,8 +748,11 @@ class AbletonMCP(ControlSurface):
                 raise ValueError("to_time must be greater than from_time")
             
             # Remove notes in the time span across the full pitch range 0-127
-            # Live API signature: remove_notes(from_time, from_pitch, time_span, pitch_span)
-            clip.remove_notes(from_time, 0, time_span, 128)
+            # Live 12 API: remove_notes_extended(from_time, from_pitch, time_span, pitch_span)
+            clip.remove_notes_extended(
+                from_time=float(from_time), from_pitch=0,
+                time_span=float(time_span), pitch_span=128
+            )
             
             result = {
                 "deleted": True,
