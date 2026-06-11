@@ -611,50 +611,10 @@ class AbletonMCP(ControlSurface):
             raise
 
     def _add_notes_to_clip(self, track_index, clip_index, notes):
-        """Add MIDI notes to a clip (calls clip.set_notes which replaces all notes)"""
-        try:
-            if track_index < 0 or track_index >= len(self._song.tracks):
-                raise IndexError("Track index out of range")
-            
-            track = self._song.tracks[track_index]
-            
-            if clip_index < 0 or clip_index >= len(track.clip_slots):
-                raise IndexError("Clip index out of range")
-            
-            clip_slot = track.clip_slots[clip_index]
-            
-            if not clip_slot.has_clip:
-                raise Exception("No clip in slot")
-            
-            clip = clip_slot.clip
-            
-            # Convert note data to Live's format
-            live_notes = []
-            for note in notes:
-                pitch = note.get("pitch", 60)
-                start_time = note.get("start_time", 0.0)
-                duration = note.get("duration", 0.25)
-                velocity = note.get("velocity", 100)
-                mute = note.get("mute", False)
-                
-                live_notes.append((pitch, start_time, duration, velocity, mute))
-            
-            # set_notes replaces all notes in the clip
-            clip.set_notes(tuple(live_notes))
-            
-            result = {
-                "note_count": len(notes)
-            }
-            return result
-        except Exception as e:
-            self.log_message("Error adding notes to clip: " + str(e))
-            raise
-
-    def _replace_clip_notes(self, track_index, clip_index, notes):
-        """Replace ALL MIDI notes in a clip (explicit full replace).
+        """Add MIDI notes to a clip using the Live 11+ add_new_notes API.
         
-        Reads existing notes for informational purposes, then overwrites
-        with the provided notes using clip.set_notes().
+        Appends notes without affecting existing notes or losing MPE data.
+        Uses the new add_new_notes(dict) API available since Live 11.
         """
         try:
             if track_index < 0 or track_index >= len(self._song.tracks):
@@ -672,24 +632,75 @@ class AbletonMCP(ControlSurface):
             
             clip = clip_slot.clip
             
-            # Convert note data to Live's format
-            live_notes = []
+            # Build note specifications for the new Live 11+ API
+            note_specs = []
             for note in notes:
-                pitch = note.get("pitch", 60)
-                start_time = note.get("start_time", 0.0)
-                duration = note.get("duration", 0.25)
-                velocity = note.get("velocity", 100)
+                spec = {
+                    "pitch": note.get("pitch", 60),
+                    "start_time": note.get("start_time", 0.0),
+                    "duration": note.get("duration", 0.25),
+                    "velocity": float(note.get("velocity", 100)),
+                }
                 mute = note.get("mute", False)
-                
-                live_notes.append((pitch, start_time, duration, velocity, mute))
+                if mute:
+                    spec["mute"] = True
+                note_specs.append(spec)
             
-            # Clear existing notes first, then replace with new ones
+            # add_new_notes appends notes without triggering the old-API warning
+            clip.add_new_notes({"notes": note_specs})
+            
+            result = {
+                "note_count": len(notes)
+            }
+            return result
+        except Exception as e:
+            self.log_message("Error adding notes to clip: " + str(e))
+            raise
+
+    def _replace_clip_notes(self, track_index, clip_index, notes):
+        """Replace ALL MIDI notes in a clip using the Live 11+ API.
+        
+        First clears existing notes via remove_notes, then adds new
+        ones via add_new_notes to preserve MPE/probability data on
+        the new notes.
+        """
+        try:
+            if track_index < 0 or track_index >= len(self._song.tracks):
+                raise IndexError("Track index out of range")
+            
+            track = self._song.tracks[track_index]
+            
+            if clip_index < 0 or clip_index >= len(track.clip_slots):
+                raise IndexError("Clip index out of range")
+            
+            clip_slot = track.clip_slots[clip_index]
+            
+            if not clip_slot.has_clip:
+                raise Exception("No clip in slot")
+            
+            clip = clip_slot.clip
+            
+            # Clear existing notes
             # Live API: remove_notes(from_time, from_pitch, time_span, pitch_span)
-            try:
-                clip.remove_notes(0.0, 0, clip.length, 128)
-            except Exception:
-                pass  # If remove_notes fails, proceed with set_notes anyway
-            clip.set_notes(tuple(live_notes))
+            clip.remove_notes(0.0, 0, clip.length, 128)
+            
+            # Build note specifications for the new Live 11+ API
+            note_specs = []
+            for note in notes:
+                spec = {
+                    "pitch": note.get("pitch", 60),
+                    "start_time": note.get("start_time", 0.0),
+                    "duration": note.get("duration", 0.25),
+                    "velocity": float(note.get("velocity", 100)),
+                }
+                mute = note.get("mute", False)
+                if mute:
+                    spec["mute"] = True
+                note_specs.append(spec)
+            
+            # add_new_notes is the Live 11+ API that preserves MPE data
+            if note_specs:
+                clip.add_new_notes({"notes": note_specs})
             
             result = {
                 "note_count": len(notes),
