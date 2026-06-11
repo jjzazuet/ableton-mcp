@@ -635,14 +635,17 @@ class AbletonMCP(ControlSurface):
             # Build note specifications for the new Live 11+ API
             note_specs = []
             for note in notes:
+                # Keep the spec minimal — only required fields
+                # to avoid C++ type conversion issues with the TNoteSpecification struct
                 spec = {
                     "pitch": int(note.get("pitch", 60)),
-                    "start_time": float(note.get("start_time", 0.0)),
-                    "duration": float(note.get("duration", 0.25)),
-                    "velocity": float(note.get("velocity", 100)),
+                    "start_time": note.get("start_time", 0.0),
+                    "duration": note.get("duration", 0.25),
                 }
-                mute = note.get("mute", False)
-                if mute:
+                # Only add optional fields if explicitly provided
+                if "velocity" in note:
+                    spec["velocity"] = note["velocity"]
+                if note.get("mute", False):
                     spec["mute"] = True
                 note_specs.append(spec)
             
@@ -689,12 +692,12 @@ class AbletonMCP(ControlSurface):
             for note in notes:
                 spec = {
                     "pitch": int(note.get("pitch", 60)),
-                    "start_time": float(note.get("start_time", 0.0)),
-                    "duration": float(note.get("duration", 0.25)),
-                    "velocity": float(note.get("velocity", 100)),
+                    "start_time": note.get("start_time", 0.0),
+                    "duration": note.get("duration", 0.25),
                 }
-                mute = note.get("mute", False)
-                if mute:
+                if "velocity" in note:
+                    spec["velocity"] = note["velocity"]
+                if note.get("mute", False):
                     spec["mute"] = True
                 note_specs.append(spec)
             
