@@ -636,9 +636,9 @@ class AbletonMCP(ControlSurface):
             note_specs = []
             for note in notes:
                 spec = {
-                    "pitch": note.get("pitch", 60),
-                    "start_time": note.get("start_time", 0.0),
-                    "duration": note.get("duration", 0.25),
+                    "pitch": int(note.get("pitch", 60)),
+                    "start_time": float(note.get("start_time", 0.0)),
+                    "duration": float(note.get("duration", 0.25)),
                     "velocity": float(note.get("velocity", 100)),
                 }
                 mute = note.get("mute", False)
@@ -688,9 +688,9 @@ class AbletonMCP(ControlSurface):
             note_specs = []
             for note in notes:
                 spec = {
-                    "pitch": note.get("pitch", 60),
-                    "start_time": note.get("start_time", 0.0),
-                    "duration": note.get("duration", 0.25),
+                    "pitch": int(note.get("pitch", 60)),
+                    "start_time": float(note.get("start_time", 0.0)),
+                    "duration": float(note.get("duration", 0.25)),
                     "velocity": float(note.get("velocity", 100)),
                 }
                 mute = note.get("mute", False)
