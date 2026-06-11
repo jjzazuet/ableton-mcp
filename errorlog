@@ -1,0 +1,10 @@
+INFO:     172.16.1.15:50858 - "POST /messages/?session_id=093953fe604a4857acaf145b3345ff70 HTTP/1.1" 202 Accepted
+2026-06-11 03:14:49,275 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2026-06-11 03:14:49,276 - AbletonMCPServer - INFO - Sending command: add_notes_to_clip with params: {'track_index': 0, 'clip_index': 1, 'notes': [{'pitch': 60, 'start_time': 0, 'duration': 1}]}
+2026-06-11 03:14:49,276 - AbletonMCPServer - INFO - Command sent, waiting for response...
+2026-06-11 03:14:49,495 - AbletonMCPServer - INFO - Received complete response (180 bytes)
+2026-06-11 03:14:49,496 - AbletonMCPServer - INFO - Received 180 bytes of data
+2026-06-11 03:14:49,496 - AbletonMCPServer - INFO - Response parsed, status: error
+2026-06-11 03:14:49,496 - AbletonMCPServer - ERROR - Ableton error: No registered converter was able to produce a C++ rvalue of type NPythonClip::TNoteSpecification from this Python object of type str
+2026-06-11 03:14:49,496 - AbletonMCPServer - ERROR - Error communicating with Ableton: No registered converter was able to produce a C++ rvalue of type NPythonClip::TNoteSpecification from this Python object of type str
+2026-06-11 03:14:49,496 - AbletonMCPServer - ERROR - Error adding notes to clip: Communication error with Ableton: No registered converter was able to produce a C++ rvalue of type NPythonClip::TNoteSpecification from this Python object of type str
