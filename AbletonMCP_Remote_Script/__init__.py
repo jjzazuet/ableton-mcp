@@ -683,7 +683,12 @@ class AbletonMCP(ControlSurface):
                 
                 live_notes.append((pitch, start_time, duration, velocity, mute))
             
-            # Replace all notes in the clip
+            # Clear existing notes first, then replace with new ones
+            # Live API: remove_notes(from_time, from_pitch, time_span, pitch_span)
+            try:
+                clip.remove_notes(0.0, 0, clip.length, 128)
+            except Exception:
+                pass  # If remove_notes fails, proceed with set_notes anyway
             clip.set_notes(tuple(live_notes))
             
             result = {
