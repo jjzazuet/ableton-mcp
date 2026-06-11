@@ -241,8 +241,10 @@ class AbletonMCP(ControlSurface):
             # Commands that modify Live's state should be scheduled on the main thread
             elif command_type in ["create_midi_track", "set_track_name",
                                  "create_clip", "create_audio_clip", "add_notes_to_clip", "set_clip_name",
+                                 "replace_clip_notes", "delete_clip_notes",
                                  "set_tempo", "fire_clip", "stop_clip",
                                  "start_playback", "stop_playback", "load_browser_item",
+                                 "set_scene_name",
                                  # Arrangement view – must run on the main thread
                                  "switch_to_arrangement_view", "set_current_song_time",
                                  "duplicate_session_clip_to_arrangement"]:
@@ -275,6 +277,21 @@ class AbletonMCP(ControlSurface):
                             clip_index = params.get("clip_index", 0)
                             notes = params.get("notes", [])
                             result = self._add_notes_to_clip(track_index, clip_index, notes)
+                        elif command_type == "replace_clip_notes":
+                            track_index = params.get("track_index", 0)
+                            clip_index = params.get("clip_index", 0)
+                            notes = params.get("notes", [])
+                            result = self._replace_clip_notes(track_index, clip_index, notes)
+                        elif command_type == "delete_clip_notes":
+                            track_index = params.get("track_index", 0)
+                            clip_index = params.get("clip_index", 0)
+                            from_time = params.get("from_time", 0.0)
+                            to_time = params.get("to_time", None)
+                            result = self._delete_clip_notes(track_index, clip_index, from_time, to_time)
+                        elif command_type == "set_scene_name":
+                            scene_index = params.get("scene_index", 0)
+                            name = params.get("name", "")
+                            result = self._set_scene_name(scene_index, name)
                         elif command_type == "set_clip_name":
                             track_index = params.get("track_index", 0)
                             clip_index = params.get("clip_index", 0)
@@ -594,7 +611,7 @@ class AbletonMCP(ControlSurface):
             raise
 
     def _add_notes_to_clip(self, track_index, clip_index, notes):
-        """Add MIDI notes to a clip"""
+        """Add MIDI notes to a clip (calls clip.set_notes which replaces all notes)"""
         try:
             if track_index < 0 or track_index >= len(self._song.tracks):
                 raise IndexError("Track index out of range")
@@ -622,7 +639,7 @@ class AbletonMCP(ControlSurface):
                 
                 live_notes.append((pitch, start_time, duration, velocity, mute))
             
-            # Add the notes
+            # set_notes replaces all notes in the clip
             clip.set_notes(tuple(live_notes))
             
             result = {
@@ -631,6 +648,113 @@ class AbletonMCP(ControlSurface):
             return result
         except Exception as e:
             self.log_message("Error adding notes to clip: " + str(e))
+            raise
+
+    def _replace_clip_notes(self, track_index, clip_index, notes):
+        """Replace ALL MIDI notes in a clip (explicit full replace).
+        
+        Reads existing notes for informational purposes, then overwrites
+        with the provided notes using clip.set_notes().
+        """
+        try:
+            if track_index < 0 or track_index >= len(self._song.tracks):
+                raise IndexError("Track index out of range")
+            
+            track = self._song.tracks[track_index]
+            
+            if clip_index < 0 or clip_index >= len(track.clip_slots):
+                raise IndexError("Clip index out of range")
+            
+            clip_slot = track.clip_slots[clip_index]
+            
+            if not clip_slot.has_clip:
+                raise Exception("No clip in slot")
+            
+            clip = clip_slot.clip
+            
+            # Convert note data to Live's format
+            live_notes = []
+            for note in notes:
+                pitch = note.get("pitch", 60)
+                start_time = note.get("start_time", 0.0)
+                duration = note.get("duration", 0.25)
+                velocity = note.get("velocity", 100)
+                mute = note.get("mute", False)
+                
+                live_notes.append((pitch, start_time, duration, velocity, mute))
+            
+            # Replace all notes in the clip
+            clip.set_notes(tuple(live_notes))
+            
+            result = {
+                "note_count": len(notes),
+                "replaced": True
+            }
+            return result
+        except Exception as e:
+            self.log_message("Error replacing clip notes: " + str(e))
+            raise
+
+    def _delete_clip_notes(self, track_index, clip_index, from_time=0.0, to_time=None):
+        """Delete MIDI notes from a clip in a time range.
+        
+        Uses Live's clip.remove_notes(from_pitch, from_time, pitch_span, time_span).
+        Defaults to removing ALL notes if no time range specified.
+        """
+        try:
+            if track_index < 0 or track_index >= len(self._song.tracks):
+                raise IndexError("Track index out of range")
+            
+            track = self._song.tracks[track_index]
+            
+            if clip_index < 0 or clip_index >= len(track.clip_slots):
+                raise IndexError("Clip index out of range")
+            
+            clip_slot = track.clip_slots[clip_index]
+            
+            if not clip_slot.has_clip:
+                raise Exception("No clip in slot")
+            
+            clip = clip_slot.clip
+            
+            if to_time is None:
+                to_time = clip.length
+            
+            time_span = to_time - from_time
+            if time_span <= 0:
+                raise ValueError("to_time must be greater than from_time")
+            
+            # Remove notes in the pitch range 0-127 over the time span
+            clip.remove_notes(0, from_time, 128, time_span)
+            
+            result = {
+                "deleted": True,
+                "from_time": from_time,
+                "to_time": to_time
+            }
+            return result
+        except Exception as e:
+            self.log_message("Error deleting clip notes: " + str(e))
+            raise
+
+    def _set_scene_name(self, scene_index, name):
+        """Set the name of a scene"""
+        try:
+            if scene_index < 0 or scene_index >= len(self._song.scenes):
+                raise IndexError("Scene index out of range")
+            
+            scene = self._song.scenes[scene_index]
+            old_name = scene.name
+            scene.name = name
+            
+            result = {
+                "scene_index": scene_index,
+                "old_name": old_name,
+                "name": scene.name
+            }
+            return result
+        except Exception as e:
+            self.log_message("Error setting scene name: " + str(e))
             raise
     
     def _set_clip_name(self, track_index, clip_index, name):

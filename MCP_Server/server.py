@@ -1,6 +1,9 @@
 # ableton_mcp_server.py
 import sys
 import os
+import uuid
+import json as json_lib
+import time
 
 # Make imports work whether run directly or installed as package
 _pkg_dir = os.path.dirname(os.path.abspath(__file__))
@@ -13,7 +16,7 @@ import json
 import logging
 from dataclasses import dataclass
 from contextlib import asynccontextmanager
-from typing import AsyncIterator, Dict, Any, List, Union
+from typing import AsyncIterator, Dict, Any, List, Union, Optional
 
 import telemetry
 from telemetry import record_startup
@@ -122,6 +125,7 @@ class AbletonConnection:
         is_modifying_command = command_type in [
             "create_midi_track", "create_audio_track", "set_track_name",
             "create_clip", "create_audio_clip", "add_notes_to_clip", "set_clip_name",
+            "replace_clip_notes", "delete_clip_notes", "set_scene_name",
             "set_tempo", "fire_clip", "stop_clip", "set_device_parameter",
             "start_playback", "stop_playback", "load_instrument_or_effect",
             # Arrangement view commands
@@ -447,6 +451,107 @@ def add_notes_to_clip(
     except Exception as e:
         logger.error(f"Error adding notes to clip: {str(e)}")
         return f"Error adding notes to clip: {str(e)}"
+
+@mcp.tool()
+@rich_telemetry_tool("replace_clip_notes", capture_notes=True)
+def replace_clip_notes(
+    ctx: Context,
+    track_index: int,
+    clip_index: int,
+    notes: List[Dict[str, Union[int, float, bool]]],
+    user_prompt: str = ""
+) -> str:
+    """
+    Replace ALL MIDI notes in a clip with the provided notes.
+
+    This reads any existing notes first (use get_clip_notes if you need
+    to merge), then overwrites with the given notes. Useful for editing
+    existing clips rather than appending.
+
+    Parameters:
+    - track_index: The index of the track containing the clip
+    - clip_index: The index of the clip slot containing the clip
+    - notes: List of note dictionaries, each with pitch, start_time, duration, velocity, and mute
+    - user_prompt: The original user prompt that led to this tool call (for telemetry)
+    """
+    try:
+        ableton = get_ableton_connection()
+        result = ableton.send_command("replace_clip_notes", {
+            "track_index": track_index,
+            "clip_index": clip_index,
+            "notes": notes
+        })
+        return f"Replaced all notes in clip at track {track_index}, slot {clip_index} with {len(notes)} notes"
+    except Exception as e:
+        logger.error(f"Error replacing clip notes: {str(e)}")
+        return f"Error replacing clip notes: {str(e)}"
+
+
+@mcp.tool()
+@telemetry_tool("delete_clip_notes")
+def delete_clip_notes(
+    ctx: Context,
+    track_index: int,
+    clip_index: int,
+    from_time: float = 0.0,
+    to_time: float = None,
+    user_prompt: str = ""
+) -> str:
+    """
+    Delete MIDI notes from a clip in a time range.
+
+    Uses Live's clip.remove_notes() API. If to_time is not specified,
+    deletes from from_time to the end of the clip.
+
+    Parameters:
+    - track_index: The index of the track containing the clip
+    - clip_index: The index of the clip slot containing the clip
+    - from_time: Start of time range in beats from clip start (default 0.0)
+    - to_time: End of time range in beats (default: end of clip)
+    - user_prompt: The original user prompt that led to this tool call (for telemetry)
+    """
+    try:
+        ableton = get_ableton_connection()
+        params = {
+            "track_index": track_index,
+            "clip_index": clip_index,
+            "from_time": from_time,
+        }
+        if to_time is not None:
+            params["to_time"] = to_time
+        result = ableton.send_command("delete_clip_notes", params)
+        return f"Deleted notes from clip at track {track_index}, slot {clip_index} (from {from_time} to {to_time or 'end'})"
+    except Exception as e:
+        logger.error(f"Error deleting clip notes: {str(e)}")
+        return f"Error deleting clip notes: {str(e)}"
+
+
+@mcp.tool()
+@rich_telemetry_tool("set_scene_name")
+def set_scene_name(ctx: Context, scene_index: int, name: str, user_prompt: str = "") -> str:
+    """
+    Set the name of a scene in the Ableton session.
+
+    Scene names persist when scenes are reordered, making them useful for
+    stable identification. Use this to assign UUIDs or section labels.
+
+    Parameters:
+    - scene_index: The index of the scene to rename
+    - name: The new name for the scene
+    - user_prompt: The original user prompt that led to this tool call (for telemetry)
+    """
+    try:
+        ableton = get_ableton_connection()
+        result = ableton.send_command("set_scene_name", {
+            "scene_index": scene_index,
+            "name": name
+        })
+        old_name = result.get("old_name", "")
+        return f"Renamed scene {scene_index} from '{old_name}' to '{name}'"
+    except Exception as e:
+        logger.error(f"Error setting scene name: {str(e)}")
+        return f"Error setting scene name: {str(e)}"
+
 
 @mcp.tool()
 @rich_telemetry_tool("set_clip_name")
@@ -951,13 +1056,418 @@ def duplicate_to_arrangement(
         return f"Error duplicating clip to arrangement: {str(e)}"
 
 
+# ═══════════════════════════════════════════════════════════════════════════════
+# Annotation Registry — external metadata store for scenes and clips
+# ═══════════════════════════════════════════════════════════════════════════════
+#
+# The registry associates stable UUIDs with scenes so annotations survive
+# scene reordering. Scene identity is carried via Ableton's scene.name field
+# using the prefix "SC-" (e.g. "SC-a1b2c3").
+#
+# Data is persisted to a JSON file (mcp-registry.json) in the project
+# directory specified via --project-dir on startup.
+
+_ANNOTATIONS_FILE = None
+
+# In-memory store: loaded on first access, written after each mutation
+_registry = None
+
+def _get_registry():
+    global _registry
+    if _ANNOTATIONS_FILE is None:
+        raise RuntimeError(
+            "Annotation registry not initialised. "
+            "Start the server with --project-dir <path>"
+        )
+    if _registry is not None:
+        return _registry
+    _registry = {
+        "scene_registry": {},       # uuid -> {current_index, committed, section, created_at}
+        "scene_annotations": {},    # uuid -> {key: val, ...}
+        "clip_annotations": {},     # "uuid:track_idx" -> {key: val, ...}
+    }
+    if os.path.exists(_ANNOTATIONS_FILE):
+        try:
+            with open(_ANNOTATIONS_FILE, "r") as f:
+                loaded = json_lib.load(f)
+                for k in ("scene_registry", "scene_annotations", "clip_annotations"):
+                    if k in loaded:
+                        _registry[k] = loaded[k]
+        except Exception as e:
+            logger.warning(f"Failed to load annotations file: {e}")
+    return _registry
+
+def _save_registry():
+    global _registry
+    reg = _get_registry()
+    try:
+        with open(_ANNOTATIONS_FILE, "w") as f:
+            json_lib.dump(reg, f, indent=2)
+    except Exception as e:
+        logger.warning(f"Failed to save annotations file: {e}")
+
+def _uuid_for_scene(scene_index, reg):
+    """Find an existing UUID at the given scene_index, or None."""
+    for uid, entry in reg["scene_registry"].items():
+        if entry.get("current_index") == scene_index:
+            return uid
+    return None
+
+def _ensure_uuid(scene_index):
+    """Return the UUID for a scene, creating one if it doesn't exist."""
+    reg = _get_registry()
+    existing = _uuid_for_scene(scene_index, reg)
+    if existing:
+        return existing
+    new_uid = str(uuid.uuid4())[:8]
+    reg["scene_registry"][new_uid] = {
+        "current_index": scene_index,
+        "committed": False,
+        "section": "",
+        "created_at": time.time()
+    }
+    reg["scene_annotations"][new_uid] = {}
+    _save_registry()
+    return new_uid
+
+
+# ── Annotation MCP tools ──────────────────────────────────────────────────────
+
+@mcp.tool()
+@telemetry_tool("annotate_scene")
+def annotate_scene(ctx: Context, scene_index: int, key: str, value: str, user_prompt: str = "") -> str:
+    """
+    Store an annotation on a scene (e.g. 'key', 'chords', 'section', 'notes').
+
+    Annotations persist in an external JSON file. The scene is assigned a
+    stable UUID that survives reordering. Use 'committed' as the key with
+    value 'true' to mark a scene as do-not-touch.
+
+    Parameters:
+    - scene_index: The index of the scene to annotate
+    - key:   Annotation key (e.g. 'key', 'chords', 'section', 'committed', 'notes')
+    - value: Annotation value (e.g. 'A major', 'I-IV-V', 'verse', 'true', 'sparse intro')
+    - user_prompt: The original user prompt that led to this tool call (for telemetry)
+    """
+    try:
+        uid = _ensure_uuid(scene_index)
+        reg = _get_registry()
+        reg["scene_annotations"][uid][key] = value
+        if key == "committed" and value.lower() == "true":
+            reg["scene_registry"][uid]["committed"] = True
+        _save_registry()
+        return f"Annotated scene {scene_index} (UUID: {uid}) — {key} = {value}"
+    except Exception as e:
+        logger.error(f"Error annotating scene: {str(e)}")
+        return f"Error annotating scene: {str(e)}"
+
+
+@mcp.tool()
+@telemetry_tool("annotate_clip")
+def annotate_clip(ctx: Context, scene_index: int, track_index: int, key: str, value: str, user_prompt: str = "") -> str:
+    """
+    Store an annotation on a clip within a scene.
+
+    The clip is identified by (scene_uuid, track_index). Since track ordering
+    is more stable than scene ordering, this is sufficient for most use cases.
+
+    Parameters:
+    - scene_index: The index of the scene containing the clip
+    - track_index: The index of the track containing the clip
+    - key:   Annotation key (e.g. 'instrument', 'role', 'pattern')
+    - value: Annotation value (e.g. 'brass1', 'high stabs', 'walk-up')
+    - user_prompt: The original user prompt that led to this tool call (for telemetry)
+    """
+    try:
+        uid = _ensure_uuid(scene_index)
+        reg = _get_registry()
+        clip_key = f"{uid}:{track_index}"
+        if clip_key not in reg["clip_annotations"]:
+            reg["clip_annotations"][clip_key] = {}
+        reg["clip_annotations"][clip_key][key] = value
+        _save_registry()
+        return f"Annotated clip (scene={scene_index} UUID={uid}, track={track_index}) — {key} = {value}"
+    except Exception as e:
+        logger.error(f"Error annotating clip: {str(e)}")
+        return f"Error annotating clip: {str(e)}"
+
+
+@mcp.tool()
+@telemetry_tool("get_scene_annotations")
+def get_scene_annotations(ctx: Context, scene_index: int, user_prompt: str = "") -> str:
+    """
+    Read all annotations stored on a scene, including its UUID and committed status.
+
+    Parameters:
+    - scene_index: The index of the scene to query
+    - user_prompt: The original user prompt that led to this tool call (for telemetry)
+    """
+    try:
+        reg = _get_registry()
+        uid = _uuid_for_scene(scene_index, reg)
+        if not uid:
+            return json.dumps({"scene_index": scene_index, "uuid": None, "annotations": {}})
+        result = {
+            "scene_index": scene_index,
+            "uuid": uid,
+            "registry": reg["scene_registry"].get(uid, {}),
+            "annotations": reg["scene_annotations"].get(uid, {}),
+            "clip_annotations": {
+                k: v for k, v in reg["clip_annotations"].items()
+                if k.startswith(f"{uid}:")
+            }
+        }
+        return json.dumps(result, indent=2)
+    except Exception as e:
+        logger.error(f"Error getting scene annotations: {str(e)}")
+        return f"Error getting scene annotations: {str(e)}"
+
+
+@mcp.tool()
+@telemetry_tool("get_clip_annotations")
+def get_clip_annotations(ctx: Context, scene_index: int, track_index: int, user_prompt: str = "") -> str:
+    """
+    Read all annotations stored on a specific clip within a scene.
+
+    Parameters:
+    - scene_index: The index of the scene containing the clip
+    - track_index: The index of the track containing the clip
+    - user_prompt: The original user prompt that led to this tool call (for telemetry)
+    """
+    try:
+        reg = _get_registry()
+        uid = _uuid_for_scene(scene_index, reg)
+        if not uid:
+            return json.dumps({"annotations": {}})
+        clip_key = f"{uid}:{track_index}"
+        return json.dumps(reg["clip_annotations"].get(clip_key, {}), indent=2)
+    except Exception as e:
+        logger.error(f"Error getting clip annotations: {str(e)}")
+        return f"Error getting clip annotations: {str(e)}"
+
+
+@mcp.tool()
+@telemetry_tool("commit_scene")
+def commit_scene(ctx: Context, scene_index: int, user_prompt: str = "") -> str:
+    """
+    Mark a scene as committed (do not touch).
+
+    Once committed, the reconciler will flag this scene and the LLM
+    should skip modifying it. The scene's UUID is set in Ableton's scene
+    name field for stable identity.
+
+    Parameters:
+    - scene_index: The index of the scene to commit
+    - user_prompt: The original user prompt that led to this tool call (for telemetry)
+    """
+    try:
+        uid = _ensure_uuid(scene_index)
+        reg = _get_registry()
+        reg["scene_registry"][uid]["committed"] = True
+        reg["scene_annotations"][uid]["committed"] = "true"
+        _save_registry()
+
+        # Set the scene name to the UUID for persistent identity
+        try:
+            ableton = get_ableton_connection()
+            ableton.send_command("set_scene_name", {
+                "scene_index": scene_index,
+                "name": f"SC-{uid}"
+            })
+        except Exception as e:
+            logger.warning(f"Could not set scene name in Ableton: {e}")
+
+        return f"Committed scene {scene_index} (UUID: {uid}) — marked as do-not-touch"
+    except Exception as e:
+        logger.error(f"Error committing scene: {str(e)}")
+        return f"Error committing scene: {str(e)}"
+
+
+@mcp.tool()
+@telemetry_tool("get_committed_scenes")
+def get_committed_scenes(ctx: Context, user_prompt: str = "") -> str:
+    """
+    Get all committed (do-not-touch) scenes.
+
+    Returns a list of committed scenes with their UUIDs and current
+    scene indices. Call this before modifying any scene to check
+    which ones are off-limits.
+
+    Parameters:
+    - user_prompt: The original user prompt that led to this tool call (for telemetry)
+    """
+    try:
+        reg = _get_registry()
+        committed = []
+        for uid, entry in reg["scene_registry"].items():
+            if entry.get("committed"):
+                annotations = reg["scene_annotations"].get(uid, {})
+                committed.append({
+                    "uuid": uid,
+                    "current_index": entry.get("current_index"),
+                    "section": entry.get("section", annotations.get("section", "")),
+                    "annotations": annotations
+                })
+        result = {
+            "committed_scenes": committed,
+            "count": len(committed)
+        }
+        return json.dumps(result, indent=2)
+    except Exception as e:
+        logger.error(f"Error getting committed scenes: {str(e)}")
+        return f"Error getting committed scenes: {str(e)}"
+
+
+@mcp.tool()
+@telemetry_tool("reconcile_scene_indices")
+def reconcile_scene_indices(ctx: Context, user_prompt: str = "") -> str:
+    """
+    Scan all scenes in Live and update the registry after reordering.
+
+    This works by reading each scene's name from Ableton. If the name
+    matches the SC-UUID format, we look up that UUID in the registry and
+    update its current_index. Scenes that were renamed or new scenes
+    without UUIDs are reported.
+
+    Call this after inserting/shuffling scenes in Ableton's Session view.
+
+    Parameters:
+    - user_prompt: The original user prompt that led to this tool call (for telemetry)
+    """
+    try:
+        ableton = get_ableton_connection()
+
+        # Scan by index to find the scene count
+        scene_count = None
+        for i in range(100):
+            try:
+                ableton.send_command("get_scene_info", {"scene_index": i})
+            except:
+                scene_count = i
+                break
+
+        reg = _get_registry()
+        found_uuids = set()
+        unmatched_indices = []
+        report_lines = []
+
+        for idx in range(scene_count or 0):
+            try:
+                scene_info = ableton.send_command("get_scene_info", {"scene_index": idx})
+                scene_name = scene_info.get("scene_name", "")
+                if scene_name.startswith("SC-"):
+                    uid = scene_name[3:]
+                    if uid in reg["scene_registry"]:
+                        old_index = reg["scene_registry"][uid].get("current_index")
+                        reg["scene_registry"][uid]["current_index"] = idx
+                        found_uuids.add(uid)
+                        if old_index != idx:
+                            report_lines.append(
+                                f"  UUID {uid} moved from index {old_index} to {idx}"
+                            )
+                    else:
+                        report_lines.append(f"  Scene {idx}: name has unknown UUID '{uid}' (orphaned)")
+                else:
+                    # Check if any registered UUID used to be at this index
+                    orphan = _uuid_for_scene(idx, reg)
+                    if orphan:
+                        # Name was changed — still update the index
+                        reg["scene_registry"][orphan]["current_index"] = idx
+                        found_uuids.add(orphan)
+                        report_lines.append(f"  UUID {orphan} found at index {idx} (name was cleared)")
+                    else:
+                        unmatched_indices.append(idx)
+            except Exception as e:
+                report_lines.append(f"  Scene {idx}: error reading: {e}")
+
+        # Flag registered scenes that were not found
+        missing = [uid for uid in reg["scene_registry"] if uid not in found_uuids]
+        for uid in missing:
+            report_lines.append(f"  UUID {uid} was not found in any scene (deleted?)")
+
+        _save_registry()
+
+        report = f"Reconciled {len(found_uuids)} of {len(reg['scene_registry'])} registered scenes.\n"
+        if report_lines:
+            report += "Changes:\n" + "\n".join(report_lines)
+        if unmatched_indices:
+            report += f"\nUnregistered scenes at indices: {unmatched_indices}"
+        return report
+    except Exception as e:
+        logger.error(f"Error reconciling scene indices: {str(e)}")
+        return f"Error reconciling scene indices: {str(e)}"
+
+
+@mcp.tool()
+@telemetry_tool("get_annotation_registry_status")
+def get_annotation_registry_status(ctx: Context, user_prompt: str = "") -> str:
+    """
+    Get a summary of the entire annotation registry.
+
+    Shows all registered scenes, their current indices, committed status,
+    and all stored annotations.
+
+    Parameters:
+    - user_prompt: The original user prompt that led to this tool call (for telemetry)
+    """
+    try:
+        reg = _get_registry()
+        summary = {
+            "total_scenes_registered": len(reg["scene_registry"]),
+            "total_scene_annotations": sum(len(v) for v in reg["scene_annotations"].values()),
+            "total_clip_annotations": sum(len(v) for v in reg["clip_annotations"].values()),
+            "committed_count": sum(
+                1 for e in reg["scene_registry"].values() if e.get("committed")
+            ),
+            "scenes": {}
+        }
+        for uid, entry in sorted(reg["scene_registry"].items(),
+                                  key=lambda x: x[1].get("current_index", 999)):
+            annotations = reg["scene_annotations"].get(uid, {})
+            summary["scenes"][uid] = {
+                "current_index": entry.get("current_index"),
+                "committed": entry.get("committed", False),
+                "section": entry.get("section", annotations.get("section", "")),
+                "annotations": annotations
+            }
+        return json.dumps(summary, indent=2)
+    except Exception as e:
+        logger.error(f"Error getting registry status: {str(e)}")
+        return f"Error getting registry status: {str(e)}"
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
 # Main execution
+# ═══════════════════════════════════════════════════════════════════════════════
 def main():
     """Run the MCP server.
+
+    Requires --project-dir pointing to the project directory. The scene
+    registry file (mcp-registry.json) is stored there so annotations
+    persist and can be version-controlled.
 
     Transport: set MCP_TRANSPORT env to 'sse' for HTTP (default: stdio).
     For SSE: set MCP_HOST (default 0.0.0.0) and MCP_PORT (default 9878).
     """
+    import argparse
+    parser = argparse.ArgumentParser(description="AbletonMCP Server")
+    parser.add_argument(
+        "--project-dir", required=True,
+        help="Path to the project directory (must exist). "
+             "The scene registry file (mcp-registry.json) is stored here "
+             "so annotations persist and can be version-controlled."
+    )
+    args = parser.parse_args()
+
+    project_dir = os.path.abspath(args.project_dir)
+    if not os.path.isdir(project_dir):
+        print(f"Error: --project-dir '{project_dir}' does not exist or is not a directory",
+              file=sys.stderr)
+        sys.exit(1)
+
+    global _ANNOTATIONS_FILE
+    _ANNOTATIONS_FILE = os.path.join(project_dir, "mcp-registry.json")
+
     transport = os.environ.get("MCP_TRANSPORT", "stdio")
     if transport == "sse":
         host = os.environ.get("MCP_HOST", "0.0.0.0")
