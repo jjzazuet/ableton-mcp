@@ -724,8 +724,9 @@ class AbletonMCP(ControlSurface):
             if time_span <= 0:
                 raise ValueError("to_time must be greater than from_time")
             
-            # Remove notes in the pitch range 0-127 over the time span
-            clip.remove_notes(0, from_time, 128, time_span)
+            # Remove notes in the time span across the full pitch range 0-127
+            # Live API signature: remove_notes(from_time, from_pitch, time_span, pitch_span)
+            clip.remove_notes(from_time, 0, time_span, 128)
             
             result = {
                 "deleted": True,
