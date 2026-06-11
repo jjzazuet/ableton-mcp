@@ -532,22 +532,28 @@ def set_scene_name(ctx: Context, scene_index: int, name: str, user_prompt: str =
     """
     Set the name of a scene in the Ableton session.
 
-    Scene names persist when scenes are reordered, making them useful for
-    stable identification. Use this to assign UUIDs or section labels.
+    You provide a human-readable name (e.g. 'verse', 'intro-build'). The
+    server auto-generates a short UUID, stores the human name alongside
+    it in the annotation registry, and sets Ableton's scene name to
+    SC-{uuid} for stable identity across reordering.
 
     Parameters:
-    - scene_index: The index of the scene to rename
-    - name: The new name for the scene
+    - scene_index: The index of the scene to name
+    - name: Human-readable section name (e.g. 'verse', 'intro', 'bridge')
     - user_prompt: The original user prompt that led to this tool call (for telemetry)
     """
     try:
+        uid = _ensure_uuid(scene_index)
+        reg = _get_registry()
+        reg["scene_annotations"][uid]["human_name"] = name
+        _save_registry()
+
         ableton = get_ableton_connection()
-        result = ableton.send_command("set_scene_name", {
+        ableton.send_command("set_scene_name", {
             "scene_index": scene_index,
-            "name": name
+            "name": f"SC-{uid}"
         })
-        old_name = result.get("old_name", "")
-        return f"Renamed scene {scene_index} from '{old_name}' to '{name}'"
+        return f"Set scene {scene_index} name to SC-{uid} (human name: {name})"
     except Exception as e:
         logger.error(f"Error setting scene name: {str(e)}")
         return f"Error setting scene name: {str(e)}"
